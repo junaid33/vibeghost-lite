@@ -13,6 +13,7 @@ export function SharedSessionEditor({ mode, session, workspace, workingDir, onCl
   const [cwd, setCwd] = useState(mode === 'session' ? session?.cwd || '' : mode === 'create' && workingDir ? workingDir : workspace.defaultWorkingDir || '~');
   const [tags, setTags] = useState(mode === 'create' ? 'new' : (session?.tags || []).join(', '));
   const [command, setCommand] = useState('');
+  const [argumentsText, setArgumentsText] = useState('');
   const [description, setDescription] = useState(workspace.description || '');
   const [color, setColor] = useState(workspace.color || '');
   const [shape, setShape] = useState(workspace.iconShape || 'circle');
@@ -54,7 +55,7 @@ export function SharedSessionEditor({ mode, session, workspace, workingDir, onCl
         await sharedMutation(client, 'PATCH', `/api/workspaces/${encodeURIComponent(workspace.remoteId)}`, { name: name.trim(), description, color, iconShape: shape, avatarMode: avatar, defaultWorkingDir: cwd });
       } else {
         const fields = { name: name.trim() || command || 'Terminal', workingDir: cwd, workspaceId: workspace.remoteId, tags: tags.split(',').map(tag => tag.trim()).filter(Boolean) };
-        if (mode === 'create') id = createdSessionId(await sharedMutation(client, 'POST', '/api/sessions', { ...fields, command: command ? [command] : [], spawn_terminal: false }));
+        if (mode === 'create') id = createdSessionId(await sharedMutation(client, 'POST', '/api/sessions', { ...fields, command: command ? [command, ...argumentsText.trim().split(/\s+/).filter(Boolean)] : [], spawn_terminal: false }));
         else await sharedMutation(client, 'PATCH', `/api/sessions/${encodeURIComponent(session!.remoteSessionId!)}`, fields);
       }
       await onSaved(id); onClose();
@@ -83,6 +84,7 @@ export function SharedSessionEditor({ mode, session, workspace, workingDir, onCl
         <KitField label="Icon style" htmlFor={field('avatar')}><select id={field('avatar')} className={kitInputClass} value={avatar} onChange={event => setAvatar(event.target.value)}><option value="gradient">Gradient</option><option value="dither">Dither</option></select></KitField>
       </KitSection> : <KitSection caption="Session">
         {mode === 'create' ? <KitField label="Start command" htmlFor={field('command')}><select id={field('command')} className={kitInputClass} value={command} onChange={event => { const value = event.target.value; setCommand(value); setTags(['pi','codex','claude'].includes(value) ? value : 'new'); }}><option value="">Host default shell</option>{['zsh','bash','pi','codex','claude'].map(value => <option key={value} value={value}>{value}</option>)}</select></KitField> : null}
+        {mode === 'create' && command ? <KitField label="Command arguments" htmlFor={field('arguments')}><input id={field('arguments')} className={kitInputClass} placeholder="--provider ollama --model gpt-6.1-sol" value={argumentsText} onChange={event => setArgumentsText(event.target.value)}/><small>Separate arguments with spaces. Arguments are passed directly, not interpreted by a shell.</small></KitField> : null}
         <KitField label="Tags (comma separated)" htmlFor={field('tags')}><input id={field('tags')} className={kitInputClass} value={tags} onChange={event => setTags(event.target.value)}/></KitField>
       </KitSection>}
     </fieldset>

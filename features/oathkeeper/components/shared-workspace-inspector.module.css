@@ -130,3 +130,15 @@
 
 /* The open file sits in its own bordered pane. */
 .previewPanel { height: 100%; min-height: 0; overflow: hidden; border: 1px solid var(--ref-line); border-radius: 8px; background: #111111; box-shadow: var(--ref-shadow); }
+
+:global(html.light) .inspector { color:#20252c; background:#f8f9fb; --ref-line:#d8dde5; --ref-panel:#fff; --ref-strip:#e9edf2; --ref-shadow:0 1px 2px #1821300a; --ref-hover:#e8edf4; --ref-active:#dae6f7; }
+:global(html.light) .inspector::before { opacity:.025; mix-blend-mode:multiply; }
+:global(html.light) .tabs { background:#e0e5ec; }
+:global(html.light) .tab { color:#5c6675; }
+:global(html.light) .tab[data-state="active"] { background:#fff; color:#20252c; box-shadow:0 1px 3px #18213018; }
+:global(html.light) :is(.iconButton,.action,.rowAction,.commitButton,.count,.branch,.repoPath,.metric,.muted,.emptyGroup,.disclosure,.chevron) { color:#566171; }
+:global(html.light) :is(.metric strong,.fileIdentity > span,.fileRow,.fileRow[data-directory="true"],.fileRow[data-active]) { color:#20252c; }
+:global(html.light) .sectionHeading { background:#e9edf2; color:#566171; border-color:#d8dde5; }
+:global(html.light) .message { background:#fff; color:#20252c; }
+:global(html.light) .previewPanel { background:#fff; }
+:global(html.light) .toolbar { border-color:#d8dde5; }

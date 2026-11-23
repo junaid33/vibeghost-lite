@@ -61,3 +61,8 @@
 }
 .pathToggle:focus-visible { outline:none; }
 .pathToggle:focus-visible .chip { outline:2px solid var(--oathkeeper-nav-accent); outline-offset:1px; }
+
+:global(html.light) .chip { background:var(--oathkeeper-raised); box-shadow:var(--oathkeeper-raised-shadow); color:#4c5664; }
+:global(html.light) .folder, :global(html.light) .count { color:#7a8390; border-color:#1821301a; }
+:global(html.light) .session[data-ended] { background:#1821300a; box-shadow:none; }
+:global(html.light) .dot { background:#18213033; }

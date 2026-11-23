@@ -127,3 +127,13 @@
 
 /* Reference finish: white hairline, top highlight, 1px drop shadow (overrides the shared card's black ring here only). */
 .groupCard.groupCard, .hero.hero, .detailCard.detailCard { box-shadow: var(--ref-card-finish); }
+
+:global(html.light) .summary { color:#566171; }
+:global(html.light) :is(.summary strong,.groupHeader h2,.rowName,.sessionsNote button) { color:#20252c; }
+:global(html.light) :is(.subGroupHeader h3) { color:#4c5664; }
+:global(html.light) :is(.groupCount,.rowMeta,.sessionsLabel,.sessionsNote,.iconButton) { color:#6f7886; }
+:global(html.light) .rowHeader:hover, :global(html.light) .iconButton:hover:not(:disabled) { background:#1821300a; }
+:global(html.light) :is(.sessionTitle,.heroTitle h1,.stat strong,.detailCardBand h2,.showMore:hover) { color:#20252c; }
+:global(html.light) .stat { background:var(--oathkeeper-raised); box-shadow:var(--oathkeeper-raised-shadow); }
+:global(html.light) .stat span { color:#6f7886; }
+:global(html.light) .session:hover { background:#1821300a; }

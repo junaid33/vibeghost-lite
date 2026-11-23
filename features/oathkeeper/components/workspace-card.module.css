@@ -72,3 +72,12 @@
 .sheen { display: block; height: 12px; border-radius: 5px; background: linear-gradient(90deg, rgb(244 247 245 / .04), rgb(244 247 245 / .085), rgb(244 247 245 / .04)); background-size: 220% 100%; animation: workspace-sheen 1.2s linear infinite; }
 @keyframes workspace-sheen { from { background-position: 100% 0; } to { background-position: -120% 0; } }
 @media (prefers-reduced-motion: reduce) { .sheen { animation: none; } .pill { transition: none; } }
+
+:global(html.light) .card { background:#e9edf2; box-shadow:0 0 0 1px #d6dbe3,0 2px 6px #18213012; }
+:global(html.light) .card::before { opacity:.03; mix-blend-mode:multiply; }
+:global(html.light) .band { background:#fff; box-shadow:0 0 0 1px #dde2e9; }
+:global(html.light) :is(.pill,.bandTitle,.tile > strong,.segments > button[aria-pressed="true"]) { color:#20252c; }
+:global(html.light) .pill[data-primary] { background:linear-gradient(180deg,#e3eefc,#d7e7fb); color:#1d4f8f; }
+:global(html.light) .segments > button { color:#566171; }
+:global(html.light) .iconButton:hover { background:#1821300d; color:#20252c; }
+:global(html.light) .barTrack { background:#1821300f; }

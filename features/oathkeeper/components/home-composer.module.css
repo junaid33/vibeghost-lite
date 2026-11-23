@@ -197,3 +197,7 @@
   .panel.compactHome [data-home-composer-controls] [data-model-kind] > svg:last-child { display: none; }
 }
 
+
+:global(html.light) .hint { color:#677384; }
+:global(html.light) .sessionToolbar { background:#edf0f4; color:#20252c; box-shadow:var(--oathkeeper-panel-shadow); }
+:global(html.light) .sessionToolbar::before, :global(html.light) .panel::before { opacity:.035; mix-blend-mode:multiply; }

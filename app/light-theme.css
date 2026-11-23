@@ -1,0 +1,37 @@
+/* Light chrome preserves the copied layout and materials, with explicit light inks. */
+html.light {
+  --oathkeeper-canvas:#f5f6f8;--oathkeeper-sidebar:#eceef1;
+  --oathkeeper-session-surface:#fff;--oathkeeper-panel:#fff;--oathkeeper-control:#fff;
+  --oathkeeper-control-ink:#262b32;--oathkeeper-field:#e9ecf0;--oathkeeper-hover:#e0e5ec;
+  --oathkeeper-ink:#20252c;--oathkeeper-muted:#626b77;
+  --oathkeeper-field-shadow:inset 0 0 0 1px #d8dde5,0 1px 0 #fff;
+  --oathkeeper-control-shadow:0 0 0 1px #d2d7df,0 2px 3px #18213012,inset 0 1px 0 #fff;
+  --oathkeeper-panel-shadow:0 0 0 1px #d8dde5,0 4px 14px #1821300a;
+  --oathkeeper-card-ink:#20252c;--oathkeeper-card-muted:#626b77;
+  --oathkeeper-ink-2:#343c47;--oathkeeper-ink-3:#4c5664;--oathkeeper-faint:#6f7886;--oathkeeper-label:#7a8390;
+  --oathkeeper-hair:#1821300f;--oathkeeper-track:#e3e7ec;
+  --oathkeeper-recess:inset 0 1px 2px #1821301a,0 1px 0 #fff;
+  --oathkeeper-raised:linear-gradient(180deg,#fff,#f6f7f9);--oathkeeper-raised-hover:linear-gradient(180deg,#fff,#eef1f5);
+  --oathkeeper-raised-shadow:0 0 0 1px #d6dbe3,0 1px 2px #1821301a,inset 0 1px 0 #fff;
+}
+html.light body{background:var(--oathkeeper-canvas);color:var(--oathkeeper-ink)}
+html.light [data-oathkeeper-page]{--oathkeeper-canvas:#f5f6f8;background:var(--oathkeeper-canvas)}
+html.light [data-oathkeeper-page] [data-workspace-toolbar],html.light [data-home-toolbar]{background:#e9ecf0;color:#343c47}
+html.light .lite-sidebar{--oathkeeper-sidebar:#eceef1;--hover-2:#dfe5ec;--line:#d2d8e0;background:#eceef1;color:#20252c}
+html.light [data-terminal-controls],html.light [data-composer-surface]{background:#eef0f4;color:#20252c;box-shadow:var(--oathkeeper-panel-shadow)}
+html.light [data-composer-surface] textarea{background:#fff;color:#20252c;box-shadow:inset 0 0 0 1px #d2d8e0}
+html.light [data-terminal-controls] :is(button,svg),html.light [data-terminal-control-toolbar] :is(button,svg){color:#46505e}
+html.light .oathkeeper-raised-control{--oathkeeper-control-ink:#343d49;color:#343d49}
+html.light [data-terminal-control-toolbar] .oathkeeper-raised-control{color:#46505e}
+html.light [data-terminal-controls] button[aria-label="Switch workspace or session"]{background:#fff;color:#20252c}
+html.light .lite-button{background:#fff;border-color:#cbd2dc;color:#20252c}
+html.light .lite-card{border-color:#d8dde5;color:#20252c}
+html.light .lite-card input{border-color:#cbd2dc;background:#fff}
+/* Copied components hard-code dark-theme inks as Tailwind arbitrary colours; remap them on light. */
+html.light [data-oathkeeper-page] :is(.text-\[\#f4f7f5\],.text-\[\#f3f2f1\],.text-\[\#ececec\],.text-white){color:#20252c}
+html.light [data-oathkeeper-page] :is(.text-\[\#919793\],.text-\[\#b7bcb9\],.text-\[\#a0a4a2\]){color:#566171}
+html.light [data-oathkeeper-page] .text-\[\#686e6a\]{color:#8a93a0}
+html.light [data-terminal-controls] :is(span,strong,small,div){color:inherit}
+html.light [data-terminal-controls]{color:#20252c}
+html.light [data-terminal-controls] small,html.light [data-terminal-controls] [class*="eyebrow"]{color:#677384}
+html.light .oathkeeper-control-selected{background:#dbe7f8!important;color:#1d4f8f!important;box-shadow:0 0 0 1px #b8cdea,inset 0 1px 0 #fff!important}

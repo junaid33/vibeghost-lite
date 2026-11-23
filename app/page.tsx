@@ -10,6 +10,7 @@ import { connection, restoreConnection, setConnection, validateHost, publicReque
 import shell from '@/features/oathkeeper/components/app-shell.module.css';
 import sidebarStyles from './_components/oathkeeper-sidebar.module.css';
 import './lite.css';
+import './light-theme.css';
 
 type Saved = { url: string; name: string };
 function Lite() {
