@@ -31,8 +31,10 @@ export async function liteFetch(path: string, init: RequestInit = {}) {
   const owner = current;
   if (!owner) throw new Error('Connect to VibeGhost first');
   async function refresh() {
-    if (!refreshing) refreshing = publicRequest(owner!.url, 'refresh', { refreshToken: owner!.refreshToken }).then(pair => {
-      if (current === owner) setConnection({ ...owner!, ...pair });
+    const latest = current;
+    if (!latest || latest.url !== owner!.url) throw new Error('VibeGhost connection changed');
+    if (!refreshing) refreshing = publicRequest(latest.url, 'refresh', { refreshToken: latest.refreshToken }).then(pair => {
+      if (current === latest) setConnection({ ...latest, ...pair });
     }).catch(error => { if (current === owner) { setConnection(null); window.dispatchEvent(new Event('lite-auth-expired')); } throw error; }).finally(() => { refreshing = null; });
     await refreshing;
   }
