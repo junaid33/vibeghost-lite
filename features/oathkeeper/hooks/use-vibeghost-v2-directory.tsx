@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import type { WorkspaceDirectory } from "../lib/workspace-directory-cache";
+import { workspaceQueries, type WorkspaceDirectory } from "../lib/workspace-directory-cache";
 import type { SharedWorkspaceClient } from "../lib/shared-workspace-client";
 import { DirectWorkspaceClient, asWorkspaceClient } from "../lib/direct-workspace-client";
 import { getWorkspaceCapabilityId, mapImportedSessions, readWorkspaceInstance, type RemoteSession, type RemoteWorkspaceResponse } from "../lib/shared-workspace-model";
@@ -49,7 +49,12 @@ function useDirectDirectory() {
   useEffect(() => {
     const scope = newScope();
     connectionScopeRef.current = scope;
-    return () => { scope.disposed = true; scope.controller.abort(); };
+    return () => {
+      scope.disposed = true; scope.controller.abort();
+      for (const item of clientsRef.current.values()) item.close();
+      clientsRef.current.clear();
+      workspaceQueries.clear();
+    };
   }, []);
 
   const load = useCallback(async (callerSignal?: AbortSignal) => {
