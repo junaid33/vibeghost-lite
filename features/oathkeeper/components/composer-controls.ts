@@ -1,0 +1,6 @@
+/** Shared with the VibeGhost composer; consumers change actions, not materials. */
+export const composerFieldClass = "relative z-10 block h-[42px] min-h-[42px] max-h-[42px] min-w-0 w-full resize-none overflow-x-hidden overflow-y-auto overscroll-contain whitespace-pre-wrap rounded-[10px] bg-[#141617] py-2 pl-3 pr-[80px] font-mono text-[16px] leading-6 text-[#f4f7f5] [overflow-wrap:anywhere] [-webkit-overflow-scrolling:touch] shadow-[inset_0_1px_2px_rgb(0_0_0/.55),0_1px_0_rgb(255_255_255/.035)] outline-none ring-1 ring-inset ring-black/30 placeholder:text-[#686e6a] focus-visible:ring-[#4592ed]/55";
+export const composerMicToneClass = "oathkeeper-raised-control [--oathkeeper-control:#302044] [--oathkeeper-control-ink:#d3b2ff] hover:[--oathkeeper-control:#3b2854] [&[aria-pressed=true]]:[--oathkeeper-control:#4b3068] [&[aria-pressed=true]]:[--oathkeeper-control-ink:#ecd9ff]";
+export const composerMicClass = `${composerMicToneClass} !absolute`;
+export const composerActionClass = "oathkeeper-raised-control flex size-8 shrink-0 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4592ed]/60 disabled:pointer-events-none disabled:opacity-40";
+export const composerPrimaryClass = `${composerActionClass} [--oathkeeper-control:#112945] [--oathkeeper-control-ink:#9dc4ff] hover:[--oathkeeper-control:#17355a]`;

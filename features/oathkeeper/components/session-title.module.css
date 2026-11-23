@@ -1,0 +1,12 @@
+.title { display: flex; min-width: 0; align-items: center; gap: 7px; }
+.text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mark { width: 12px; height: 12px; flex: none; fill: #d97757; pointer-events: none; }
+.mark[data-session-agent-mark="claude"] { width: 10px; height: 10px; }
+.mark[data-session-agent-mark="pi"] { width: 10px; height: 10px; margin-inline: 1px; }
+.title[data-placement="trigger"] { line-height: 16px; }
+.title[data-placement="trigger"] .mark { transform: translateY(.5px); }
+.title[data-placement="trigger"] .mark[data-session-agent-mark="pi"] { width: 8px; height: 8px; margin-inline: 2px; }
+/* Beside the activity time on session cards: sized to the 9–10px metadata line. */
+.meta { display: inline-flex; align-items: center; gap: 4px; margin-right: 5px; }
+.meta .mark { width: 9px; height: 9px; }
+.meta .mark[data-session-agent-mark="pi"] { width: 8px; height: 8px; margin-inline: 0; }

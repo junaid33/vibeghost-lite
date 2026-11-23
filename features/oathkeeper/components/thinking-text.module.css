@@ -1,0 +1,9 @@
+/* Beautiful UI's Loading State label (beautifului.dev, loading-state.tsx): the text shimmers
+   ink-3 → ink → ink-3 every 1.4s. The glyphs churning ahead of settled text are dimmer than it. */
+.waiting { color: transparent; background: linear-gradient(90deg, var(--ink-3) 35%, var(--ink) 50%, var(--ink-3) 65%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; animation: waiting-shimmer 1.4s linear infinite; }
+@keyframes waiting-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+.churn { opacity: .55; }
+
+@media (prefers-reduced-motion: reduce) {
+  .waiting { animation: none; }
+}

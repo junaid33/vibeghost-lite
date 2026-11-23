@@ -1,0 +1,17 @@
+/* Sidebar Active Feed (same as VibeGhost's). Rows, ··· menus, chevrons and folder chips come from
+   the workspace tree (sidebar.module.css, sidebar-workspace-sessions.module.css);
+   status marks from the Active Feed page. This adds only the small extras. */
+.headingLink { display: inline-flex; align-items: center; gap: 6px; color: inherit; text-decoration: none; }
+.headingLink:hover, .headingLink[aria-current="page"] { color: var(--oathkeeper-ink); }
+.headingLink:focus-visible { outline: 2px solid var(--oathkeeper-nav-accent); outline-offset: 2px; border-radius: 3px; }
+.headingCount { color: var(--oathkeeper-muted); font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 10px; font-weight: 400; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+/* The status mark takes the workspace avatar's slot (size-4). */
+.groupMark { display: grid; flex: none; place-items: center; width: 16px; height: 16px; color: #7abd95; }
+.groupMark svg { width: 16px; height: 16px; }
+.groupMark[data-active-status="stopped"] { color: #9b9393; }
+.groupMark[data-active-status="finished"] { color: #8bb8ff; }
+.groupCount { margin-left: 6px; color: var(--oathkeeper-muted); font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 10px; font-variant-numeric: tabular-nums; }
+.more { display: block; margin: 0 0 6px 4px; padding: 2px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--oathkeeper-muted); font-size: 11px; cursor: pointer; }
+.more:hover { color: var(--oathkeeper-ink); }
+.more:focus-visible { outline: 2px solid var(--oathkeeper-nav-accent); }
+.empty { margin: 0; padding: 4px 12px 8px; color: var(--oathkeeper-muted); font-size: 11px; }

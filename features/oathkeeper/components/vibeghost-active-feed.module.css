@@ -1,0 +1,32 @@
+/* Status groups are headings, not boxes: the workspace card is the one surface. */
+.statusCard { min-width: 0; margin-top: 18px; }
+.statusCard:first-child { margin-top: 8px; }
+.statusHeading { margin: 0; }
+.statusHeader { display: flex; width: 100%; min-width: 0; min-height: 36px; align-items: center; gap: 9px; padding: 6px 4px; border: 0; border-radius: 9px; background: transparent; color: #d7dbd8; font: 500 13px/18px var(--font-body), sans-serif; text-align: left; cursor: pointer; }
+.statusHeader:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+@media (hover: hover) { .statusHeader:hover { background: rgb(255 255 255 / .035); } }
+.statusIcon { width: 16px; height: 16px; flex: none; color: #7abd95; }
+.statusHeader[data-active-status="stopped"] .statusIcon { color: #9b9393; }
+.statusHeader[data-active-status="finished"] .statusIcon { color: #8bb8ff; }
+.statusHeader[data-active-status="error"] .statusIcon { color: #ef626d; }
+.statusCount { flex: none; color: #7c817e; font-family: var(--font-geist-mono), monospace; font-size: 12px; font-weight: 400; line-height: 18px; font-variant-numeric: tabular-nums; }
+.workspaces { display: grid; min-width: 0; gap: 10px; padding-top: 6px; }
+.workspaces[hidden] { display: none; }
+.workspace { composes: card from "./workspace-card.module.css"; }
+.workspaceHeader { composes: band from "./workspace-card.module.css"; display: flex; min-width: 0; min-height: 38px; align-items: center; gap: 8px; padding: 7px 10px; }
+.workspaceHeader + .directories { margin-top: 4px; }
+/* The whole title band toggles the card: the name button's hit area covers it. */
+.workspaceHeader { position: relative; cursor: pointer; }
+.workspaceToggle { padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; outline: none; }
+.workspaceToggle::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.workspaceHeader:has(.workspaceToggle:focus-visible) { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.workspaceChevron { width: 12px; height: 12px; flex: none; color: #7c817e; transition: transform 160ms ease, color 120ms ease; }
+.workspaceChevronOpen { transform: rotate(90deg); }
+@media (hover: hover) { .workspaceHeader:hover .workspaceChevron { color: #b7bcb9; } }
+@media (prefers-reduced-motion: reduce) { .workspaceChevron { transition: none; } }
+.workspaceHeader h3 { min-width: 0; flex: 1; overflow: hidden; color: #f4f7f5; font-size: 13px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.workspaceHeader > span { flex: none; color: #7c817e; font-family: var(--font-geist-mono), monospace; font-size: 12px; }
+.directories { min-width: 0; }
+
+/* Reference finish: white hairline, top highlight, 1px drop shadow (overrides the shared card's black ring here only). */
+.workspace.workspace { box-shadow: var(--ref-card-finish); }

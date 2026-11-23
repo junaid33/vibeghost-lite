@@ -1,0 +1,8 @@
+/* The composer controls deliberately compose the exact dock button primitives. */
+.control { composes: control from "../dock-surface.module.css"; }
+.darkControl { composes: darkControl from "../dock-surface.module.css"; }
+
+/* Send uses the live dock search button, not a second copy of its colors/shadows. */
+.sendControl { composes: searchButton from "../bottom-navigation.module.css"; }
+.sendControl.sendControl { width: var(--prompt-send-size, 32px); height: var(--prompt-send-size, 32px); border-radius: var(--oathkeeper-control-radius, 8px); }
+.sendControl:disabled { opacity: .4; cursor: default; }

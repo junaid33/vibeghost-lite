@@ -1,0 +1,90 @@
+/* Lab01 interaction foundation, with the owner's black/inset-gray menu palette.
+ * The main session picker retains its original shell and palette.
+ * Radix keeps keyboard, focus, collision, radio/checkbox and dismissal behavior. */
+.oathkeeper-menu-surface[data-slot], .crm-records-filter-menu {
+  --lab-menu-row-height: 34px;
+  --lab-menu-ink: #dfdfdc;
+  --surface: var(--oathkeeper-panel);
+  --field: var(--oathkeeper-field);
+  --hover: var(--oathkeeper-hover);
+  --ink: var(--lab-menu-ink);
+  --ink-2: var(--lab-menu-ink);
+  --ink-3: #999999;
+  isolation: isolate;
+  border: 0;
+  border-radius: 8px;
+  background: var(--oathkeeper-panel);
+  color: var(--lab-menu-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / .15), 0 68px 27px rgb(0 0 0 / .04), 0 38px 23px rgb(0 0 0 / .13), 0 17px 17px rgb(0 0 0 / .22), 0 4px 9px rgb(0 0 0 / .26);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  max-width: calc(100vw - 16px);
+  max-height: min(calc(100dvh - 24px), var(--radix-dropdown-menu-content-available-height, var(--radix-popover-content-available-height, var(--radix-select-content-available-height, calc(100dvh - 24px)))));
+  overscroll-behavior: contain;
+}
+/* Ordinary menus, not the dedicated workspace/session picker. */
+.oathkeeper-menu-surface[data-slot]:not([data-session-picker]), .crm-records-filter-menu {
+  --oathkeeper-hover: #272729;
+  --surface: #121214;
+  --hover: #272729;
+  --background: #18181b;
+  --foreground: #b4b4bc;
+  background: #121214;
+  border-radius: 10px;
+}
+/* Popovers own their padding (p-3 by default; callers may request p-0/p-1/p-2).
+ * Only menus get compact edge insets; unlayered CSS must not override those utilities. */
+.oathkeeper-menu-surface[data-slot]:not([data-slot=popover-content]):not([data-session-picker]), .crm-records-filter-menu {
+  padding: 4px;
+}
+.oathkeeper-menu-surface::after, .crm-records-filter-menu::after {
+  content: ''; position: absolute; z-index: 2; inset: 0;
+  background: linear-gradient(135deg, rgb(255 255 255 / .1), rgb(255 255 255 / 0)) border-box;
+  -webkit-mask: linear-gradient(black, black) padding-box, linear-gradient(black, black);
+  mask: linear-gradient(black, black) padding-box, linear-gradient(black, black);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  border-radius: inherit; border: 1px solid transparent; pointer-events: none;
+}
+.oathkeeper-menu-surface :is([data-slot=dropdown-menu-item], [data-slot=dropdown-menu-checkbox-item], [data-slot=dropdown-menu-radio-item], [data-slot=dropdown-menu-sub-trigger], [data-slot=select-item], [data-slot=context-menu-item], [data-slot=context-menu-checkbox-item], [data-slot=context-menu-radio-item], [data-slot=context-menu-sub-trigger], [cmdk-item], .oathkeeper-popover-row, [data-lab-menu-row]),
+.crm-records-filter-menu button {
+  position: relative; z-index: 1; display: flex; align-items: center; gap: 8px;
+  width: 100%; min-height: var(--lab-menu-row-height); height: auto;
+  margin: 0; padding: 0 10px 0 6px; border: 0; border-radius: 6px;
+  background: transparent; box-shadow: none;
+  color: var(--lab-menu-ink); font-family: var(--font-body); font-size: 13px; font-weight: 500; line-height: 22px;
+  cursor: default; user-select: none; outline: none;
+  transition: background-color .1s, color .1s;
+}
+.oathkeeper-menu-surface :is([data-slot=dropdown-menu-checkbox-item], [data-slot=dropdown-menu-radio-item], [data-slot=select-item], [data-slot=context-menu-checkbox-item], [data-slot=context-menu-radio-item], [data-inset=true]) { padding-left: 30px; }
+.oathkeeper-menu-surface :is([role^=menuitem], [data-slot=select-item], [cmdk-item], .oathkeeper-popover-row, [data-lab-menu-row]):is([data-highlighted], [data-selected=true], [data-state=open], :focus-visible),
+.crm-records-filter-menu button:focus-visible { background: var(--oathkeeper-hover); }
+@media (hover: hover) {
+ .oathkeeper-menu-surface :is([role^=menuitem], [data-slot=select-item], [cmdk-item], .oathkeeper-popover-row, [data-lab-menu-row]):hover:not([data-disabled=true]):not([data-disabled=""]):not(:disabled),
+ .crm-records-filter-menu button:hover:not(:disabled) { background: var(--oathkeeper-hover); }
+}
+.oathkeeper-menu-surface :is([role^=menuitem], [data-slot=select-item], [cmdk-item], [data-lab-menu-row]):focus-visible, .crm-records-filter-menu button:focus-visible { outline: 1.5px solid #7a8ff7; outline-offset: -1.5px; }
+.oathkeeper-menu-surface :is([role^=menuitem], [data-slot=select-item], [cmdk-item]):is([data-disabled]:not([data-disabled=false]), :disabled) { opacity: .4; pointer-events: none; }
+.oathkeeper-menu-surface [data-variant=destructive] { color: #ff9ba8; }
+.oathkeeper-menu-surface :is([data-slot=dropdown-menu-shortcut], [data-slot=context-menu-shortcut]) { margin-left: auto; }
+.oathkeeper-menu-surface:not([data-session-picker]) :is([role^=menuitem], [data-slot=select-item]):not([data-variant=destructive]) svg { color: #999; }
+.oathkeeper-menu-surface [data-variant=destructive] svg { color: inherit; }
+.oathkeeper-menu-surface :is([data-slot=dropdown-menu-separator], [data-slot=context-menu-separator], [data-slot=select-separator]) { height: 1px; margin: 2px 6px; background: rgb(255 255 255 / .08); }
+.oathkeeper-menu-surface :is([data-slot=dropdown-menu-label], [data-slot=context-menu-label]) { padding: 6px; color: #999; font-size: 11px; }
+.oathkeeper-menu-surface [data-radix-select-viewport] { padding: 0; }
+.oathkeeper-menu-surface [cmdk-root] { background: transparent; color: inherit; }
+/* Dynamic menus retain the source highlight without hardcoding five nth-child rows. */
+.oathkeeper-menu-surface[data-lab-menu]::before {
+ content: ''; position: absolute; z-index: 0; top: var(--lab-marker-top, 2px); left: var(--lab-marker-left, 2px);
+ height: var(--lab-marker-height, 34px); width: var(--lab-marker-width, calc(100% - 4px));
+ border-radius: 6px; background: var(--oathkeeper-hover); pointer-events: none;
+ opacity: 0; scale: .75; transition: top 0s .1s, opacity .1s, scale .1s;
+}
+.oathkeeper-menu-surface[data-lab-highlight=true]::before { opacity: 1; scale: 1; transition: opacity .1s, scale .1s; }
+@media (prefers-reduced-motion: reduce) { .oathkeeper-menu-surface::before, .oathkeeper-menu-surface [role^=menuitem] { transition: none; } }
+
+/* Session cards stay raised on workspace pages, but become flat Lab rows in a picker. */
+.oathkeeper-menu-surface [data-session-path-menu] .oathkeeper-raised-control { background: transparent; box-shadow: none; border-radius: 6px; }
+.oathkeeper-menu-surface [data-lab-menu-row][data-multiline] { min-height: 44px; padding-block: 6px; }

@@ -1,0 +1,29 @@
+.dot {
+  position: relative;
+  display: inline-block;
+  width: 6px;
+  height: 20px;
+  flex: none;
+  color: #737a83;
+  overflow: visible;
+  transition: color 200ms ease;
+}
+/* Working keeps the same 6px slot: the three circles orbit the dot's own centre
+   and spill into the row's padding and gap (about 6px each side) instead of
+   widening the slot and pushing the title right. */
+.dot[data-bright], .dot[data-selected] { color: var(--oathkeeper-nav-accent, #2684fc); }
+.dot[data-activity="exited"], .dot[data-activity="error"] { color: #ef626d; }
+.circle {
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+}
+.circle:first-child { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .dot { transition: none; }
+}

@@ -1,0 +1,80 @@
+/* The mini chat fills its small window (home-chat-dialog.module.css): a 42px recessed header bar
+   (components/ui/inset-header.module.css), then the agent's chat. Doubled classes win over the
+   chat's own module rules. */
+.mini { display: flex; min-width: 0; min-height: 0; flex: 1; flex-direction: column; gap: 6px; }
+.body { display: flex; min-width: 0; min-height: 0; flex: 1; flex-direction: column; }
+
+/* MiniChat's recessed well: the material of the chat's loading container (home-console .thread, and
+   the VibeGhost session's "Connecting" placeholder), lifted onto one box that is always mounted. The
+   loader and then the whole chat (conversation, session bar, input and toolbar) render inside it, so
+   nothing moves when the chat arrives. The conversation scrolls inside it. */
+.well {
+  position: relative;
+  overflow: hidden;
+  padding: 3px;
+  border-radius: 12px;
+  background: #08090a;
+  box-shadow: inset 0 1px 0 rgb(244 247 245 / .06), 0 4px 8px rgb(0 0 0 / .25), 0 0 0 1px rgb(0 0 0 / .2);
+}
+/* Inside the well, the inner containers that wore the same material (the loading thread, the
+   session placeholder, the session card) drop it, so the well never stacks a second inset. */
+.well.well :global(:is([data-home-console] > section, [data-tabs-placeholder], [data-session-card])) {
+  padding: 0;
+  border-radius: 9px;
+  background: none;
+  box-shadow: none;
+}
+.well.well :global([data-tabs-placeholder]) { --tw-ring-shadow: 0 0 #0000; }
+/* The controls block inside the well sits 3px off its edges, as the well's padding does elsewhere. */
+.well.well :global(:is([data-terminal-controls], [data-home-console] > :last-child)) { padding: 0 3px 3px; }
+
+/* The controls block under the conversation (the VibeGhost session page's, or Oathkeeper's last
+   child) ends at the window's padding, not 12px above a dock. */
+.mini.mini :global(:is([data-terminal-controls], [data-home-console] > :last-child)) { gap: 10px; margin-bottom: 0; }
+
+/* The session bar above the input, the input and the toolbar below it sit straight on the window:
+   their cards (dock-surface material) are gone. */
+.mini.mini :global(:is([data-session-toolbar], [data-composer-surface])) {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.mini.mini :global(:is([data-session-toolbar], [data-composer-surface]))::before { display: none; }
+.mini.mini :global([data-composer-surface]) { gap: 6px; }
+
+/* Smaller controls: the session bar's 36px controls at 30px, the toolbar's 32px controls at 28px.
+   The input keeps its height and 16px type, so phones don't zoom into it. */
+.mini.mini :global([data-session-toolbar] :is(.h-9, .size-9)) { height: 30px; }
+.mini.mini :global([data-session-toolbar] .size-9) { width: 30px; }
+/* The session button's two lines (workspace · computer over the title) closer together and a
+   step smaller: 8px over 10.5px, 1px apart, instead of 9px over 11px, 4px apart on a 16px line. */
+.mini.mini :global([data-session-toolbar] .leading-none > :first-child) { font-size: 8px; }
+.mini.mini :global([data-session-toolbar] .leading-none > .mt-1) { margin-top: 1px; font-size: 10.5px; }
+.mini.mini :global([data-session-toolbar] [data-placement="trigger"]) { line-height: 13px; }
+.mini.mini :global(:is([data-terminal-composer] > :last-child, [data-home-composer-controls]) :is(.h-8, .size-8)) { height: 28px; }
+.mini.mini :global(:is([data-terminal-composer] > :last-child, [data-home-composer-controls]) .size-8) { width: 28px; }
+.mini.mini :global(:is([data-terminal-composer] > :last-child, [data-home-composer-controls])) { padding: 0; }
+
+/* Without its card, the input wears the card's material instead (dock-surface .surface: rgb(18 19 20 / .92)
+   with its faint light edge), set into the window as an inset well. */
+.mini.mini :global(:is([data-terminal-composer-field], [data-home-composer]) textarea) {
+  background: rgb(18 19 20 / .92);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / .6), inset 0 0 0 1px rgb(255 255 255 / .07), 0 1px 0 rgb(255 255 255 / .045);
+}
+.mini.mini :global(:is([data-terminal-composer-field], [data-home-composer]) textarea:focus-visible) {
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / .6), inset 0 0 0 1px rgb(69 146 237 / .55), 0 1px 0 rgb(255 255 255 / .045);
+}
+
+/* A VibeGhost session's conversation sits on the window too, as Oathkeeper's does: the session page's
+   card frame and its dark chat surface are gone. The terminal view keeps its own dark, rounded screen. */
+.mini.mini :global([data-session-card]) { padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.mini.mini :global([data-session-card] > [data-session-chat]) { inset: 0; border-radius: 0; background: none; }
+/* Without that surface, the hidden view (the terminal under the chat) would show through. Opacity,
+   not visibility: the terminal host sets its own inline visibility, which a parent can't override. */
+.mini.mini :global([data-session-card] > [aria-hidden="true"]) { opacity: 0; }
+
+/* Oathkeeper's empty conversation heading, at the window's scale. */
+.mini.mini :global([data-home-console] h1) { font-size: 18px; }

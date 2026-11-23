@@ -1,0 +1,105 @@
+/* Directory → session hierarchy. A directory is a flat header row inside its
+   parent card (the workspace card, or its own card on the workspace page);
+   sessions are slim raised rows whose 11px radius nests inside the 16px card
+   with its 5px inset. No floating-dock shadows inside cards. */
+.pathCard { min-width: 0; }
+/* Inside a workspace card, directories are plain rows (hover highlights the row). */
+.workspaceList { display: grid; min-width: 0; }
+.workspaceList > .pathCard + .pathCard { margin-top: 2px; }
+.trailingChevron { margin-left: 2px; color: #7c817e; }
+/* Workspace page: each directory is its own card with a recessed title band. */
+.pageCard { composes: card from "./workspace-card.module.css"; }
+.pageBand { composes: band from "./workspace-card.module.css"; }
+.pageBand + .sessionBody { padding-top: 4px; }
+.pathHeader,
+.pagePathHeader {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 9px;
+  border-radius: 11px;
+  background: transparent;
+  color: #d7dbd8;
+  text-align: left;
+}
+.pathHeader { cursor: pointer; }
+@media (hover: hover) { .pathHeader:hover { background: rgb(255 255 255 / .03); } }
+.pathHeader:active { cursor: pointer; transform: translateY(1px); }
+.pathHeader:focus-visible,
+.sessionButton:focus-visible,
+.removeButton:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.pathHeaderWithControls { gap: 7px; }
+.pathChevron { width: 12px; height: 12px; flex: none; color: #77827b; transition: transform 180ms cubic-bezier(.23,1,.32,1); }
+.pathChevronOpen { transform: rotate(90deg); }
+.pathIcon { width: 13px; height: 13px; flex: none; color: #919793; }
+.pathCopy { display: block; min-width: 0; flex: 1; }
+.pathTitle,
+.pagePathHeader h2 { display: block; overflow: hidden; color: #dfe3e0; font-size: 13px; font-weight: 500; line-height: 17px; text-overflow: ellipsis; white-space: nowrap; }
+.fullPath { display: block; overflow: hidden; margin-top: 2px; color: #7c817e; font-family: var(--font-geist-mono), monospace; font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
+.pathCount { margin-left: auto; color: #7c817e; font-family: var(--font-geist-mono), monospace; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.menuPathLabel { min-width: 0; flex: 1; overflow: hidden; color: #a6b0a9; font-family: var(--font-geist-mono), monospace; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.sessionBody { padding: 2px 0 0; }
+/* Sessions: quiet two-line rows straight on the card, no dividers and no raised row cards
+   (owner reference "Table without horizontal dividers", Curator 8389dfc7, at its 2.4x scale):
+   72px rows, 14/20 title and meta, a 6px-radius fill on hover (the reference's #242424 →
+   #313131 step, as white over our card), ended sessions with a dim title that lights on hover. */
+.sessionList { display: grid; min-width: 0; gap: 0; }
+.session {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background: transparent;
+  transition: background-color 120ms ease;
+}
+@media (hover: hover) { .session:hover { background: rgb(255 255 255 / .051); box-shadow: var(--ref-row-hover-edge); } }
+/* "Show N more": a flat text row under the preview, aligned with session titles. */
+.showAll { display: flex; min-height: 34px; align-items: center; gap: 10px; padding: 0 12px 0 11px; border: 0; border-radius: 11px; background: transparent; color: #919793; font-size: 12px; font-weight: 500; text-align: left; cursor: pointer; transition: color 120ms ease, background-color 120ms ease; }
+/* Grey dot in the session-dot position, so the text lines up with session titles. */
+.moreDot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: #4d524f; }
+.showAll:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+@media (hover: hover) { .showAll:hover { color: #f4f7f5; background: rgb(255 255 255 / .03); } }
+.sessionInner { display: flex; min-width: 0; align-items: center; border-radius: inherit; }
+.session[data-selected="true"] { background: rgb(255 255 255 / .09); }
+.sessionButton { position: relative; display: flex; min-width: 0; min-height: 72px; flex: 1; align-items: flex-start; gap: 10px; padding: 16px 12px 16px 11px; border-radius: inherit; text-align: left; }
+.sessionDot.sessionDot { position: relative; top: -1px; }
+.sessionCopy { min-width: 0; flex: 1; }
+.sessionTitle { display: block; overflow: hidden; color: #f4f7f5; font-size: 14px; font-weight: 500; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; }
+.sessionCopy [data-session-card-metadata] { margin-top: 0; color: #919793; font-size: 14px; line-height: 20px; }
+.session[data-exited="true"] .sessionTitle { color: #919793; }
+@media (hover: hover) { .session:hover .sessionTitle { color: #fff; } .session:hover [data-session-card-metadata] { color: #c2c7c4; } }
+/* Row menu: beside the row, aligned with the title line. */
+.sessionActions { display: flex; flex: none; align-self: flex-start; padding: 11px 6px 0 0; }
+.removeButton { display: grid; width: 32px; height: 32px; flex: none; place-items: center; margin-right: 6px; border-radius: 8px; color: #b98282; }
+.removeButton:hover { background: rgb(230 123 115 / .1); color: #e67b73; }
+.pagePathHeader { min-height: 48px; }
+.menuPathCard { border-color: transparent; background: transparent; box-shadow: none; }
+.menuPathCard .pathHeader { min-height: 36px; padding: 5px 7px; background: transparent; }
+.menuPathCard .pathCount { font-size: 8px; }
+.menuSessionBody { margin-left: 8px; padding: 3px 0 1px 9px; border-left: 1px solid rgb(69 80 71 / .6); }
+.menuPathCard .session { border-radius: 8px; }
+.menuPathCard .sessionButton { min-height: 46px; padding: 9px 11px 9px 7px; border-radius: 8px; }
+.menuPathCard .sessionDot { top: -2px; }
+.menuPathCard .sessionTitle { font-size: 12px; line-height: 16px; }
+.menuPathCard [data-session-card-metadata] { font-size: 12px; line-height: 15px; }
+@media (max-width: 520px) {
+  .pathCount { max-width: 72px; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (hover: none) and (pointer: coarse) {
+  .removeButton { width: 40px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pathChevron { transition: none; }
+  .pathHeader:active { transform: none; }
+}
+/* A folder card's quick create (+), after its session count. */
+.pathCreate { display: grid; width: 28px; height: 28px; flex: none; place-items: center; margin: -4px -6px -4px 2px; border-radius: 7px; color: #919793; }
+.pathCreate svg { width: 14px; height: 14px; }
+.pathCreate:hover:not(:disabled) { background: rgb(255 255 255 / .06); color: #f4f7f5; }
+.pathCreate:disabled { opacity: .4; }
+.pathCreate:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 1px; }
+
+/* Reference finish: white hairline, top highlight, 1px drop shadow (overrides the shared card's black ring here only). */
+.pageCard.pageCard { box-shadow: var(--ref-card-finish); }

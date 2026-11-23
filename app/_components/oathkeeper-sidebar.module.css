@@ -1,0 +1,198 @@
+/* Flush application sidebar, like Openfront Marketplace. Navigation rows
+   retain their own spacing; the sidebar itself is not a floating card. */
+.sidebar {
+  --oathkeeper-sidebar: #141617;
+  --ink: var(--oathkeeper-ink);
+  --ink-2: var(--oathkeeper-ink);
+  --ink-3: var(--oathkeeper-muted);
+  --hover-2: rgb(248 248 250 / .07);
+  --field: var(--oathkeeper-field);
+  --line: rgb(248 248 250 / .1);
+  --line-strong: rgb(248 248 250 / .15);
+  --signal: var(--oathkeeper-nav-accent);
+  --radius-control: 12px;
+  width: 304px;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--oathkeeper-sidebar);
+  color: var(--oathkeeper-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  padding: 10px 20px;
+}
+.logo {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #030405, #101213);
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / .8), 0 1px 0 rgb(255 255 255 / .065);
+  color: var(--oathkeeper-ink);
+}
+.logo > * { width: 28px; height: 28px; flex: none; }
+.create {
+  display: flex;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--oathkeeper-control-radius);
+  background: var(--oathkeeper-control);
+  color: var(--oathkeeper-ink);
+  box-shadow: var(--oathkeeper-control-shadow);
+}
+.create:active:not(:disabled) { transform: translateY(1px); }
+.create:disabled { opacity: .4; }
+.primary {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  gap: 1px;
+  margin-top: 20px;
+  padding: 0 12px;
+}
+.sidebar .row,
+.sidebar .childRow {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  min-height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px 0 12px;
+  border: 0;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--oathkeeper-ink);
+  background: transparent;
+  user-select: none;
+}
+.sidebar .row > svg { width: 18px; height: 18px; flex: none; color: var(--oathkeeper-muted); }
+.sidebar .row > span { margin-left: 0; }
+.sidebar .row[aria-current="page"],
+.sidebar .row[data-sidebar-active="true"],
+.sidebar .childRow[aria-current="page"],
+.sidebar .thread[aria-current="page"] {
+  background: rgb(38 132 252 / .15);
+  color: var(--oathkeeper-nav-accent);
+}
+.sidebar .row:is([aria-current="page"], [data-sidebar-active="true"]) > svg { color: inherit; }
+.sidebar :is(.row,.childRow,.thread,.logo,.create):focus-visible {
+  outline: 2px solid var(--oathkeeper-nav-accent);
+  outline-offset: -2px;
+}
+.sidebar svg.chevron {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-left: auto;
+  color: var(--oathkeeper-muted);
+  transform: rotate(-90deg);
+  transition: transform 200ms ease-in-out;
+}
+.sidebar .chevron[data-expanded="true"] { transform: rotate(0deg); transition: transform 300ms var(--oathkeeper-nav-spring); }
+.history { margin-top: 24px; padding: 0 12px; }
+.historyHeader { display: flex; align-items: center; height: 36px; padding: 0 12px; color: var(--oathkeeper-muted); }
+.historyHeader > button { margin-left: auto; }
+.history .thread {
+  display: flex;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  align-items: center;
+  text-align: left;
+  border-radius: 12px;
+  color: var(--oathkeeper-ink);
+}
+.history .thread[aria-disabled="true"] { cursor: default; }
+.searchField { display:flex; align-items:center; gap:8px; height:36px; border-radius:12px; padding:0 12px; background:var(--oathkeeper-field); box-shadow:var(--oathkeeper-field-shadow); }
+.searchField input { min-width:0; width:100%; background:transparent; outline:none; font-size:16px; }
+.searchField svg { width:16px; height:16px; flex:none; color:var(--oathkeeper-muted); }
+/* Fixed-height CRM rows use the iframe's hover rail and moving selected dot. */
+.crmTree { position:relative; }
+.crmList { display:flex; flex-direction:column; gap:1px; padding:0; margin:1px 0 0; list-style:none; }
+.sidebar .crmList .childRow { padding-left:18px; gap:16px; }
+.childCount { margin-left:auto; color:var(--oathkeeper-muted); font:500 12px/16px var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+.subnavDot { display:block; width:6px; height:6px; flex:none; border-radius:50%; background:rgb(248 248 250 / .2); }
+.treeBar { position:absolute; left:16px; top:14px; width:10px; border-radius:999px; background:rgb(248 248 250 / .1); pointer-events:none; transition:height 200ms ease-in-out,opacity 200ms ease-in-out; }
+.treeDot { position:absolute; left:18px; top:16px; width:6px; height:6px; border-radius:50%; background:var(--oathkeeper-nav-accent); box-shadow:0 0 10px rgb(38 132 252 / .85),inset 0 1px 0 rgb(255 255 255 / .25); pointer-events:none; transition:translate 200ms ease-in-out,opacity 200ms ease-in-out; }
+/* Workspace/session identities are preserved in the expandable application tree. */
+/* A zero-minimum track prevents long nested session/path labels from sizing
+   the entire navigation wider than its sidebar (and clipping trailing controls). */
+.sidebar .tree { display:grid; grid-template-columns:minmax(0,1fr); min-width:0; max-width:100%; gap:1px; position:relative; margin:1px 0 0; padding-left:12px; border-left:0; list-style:none; }
+.sidebar .tree > li { min-width:0; }
+.sidebar .tree .childRow { padding-left:12px; gap:10px; }
+.sidebar .tree .childRow > :first-child { margin-right:0; flex-shrink:0; }
+.sidebar[data-collapsed="true"] { width:56px; }
+.sidebar[data-collapsed="true"] .header { padding-inline:12px; }
+.sidebar[data-collapsed="true"] .primary { padding-inline:8px; }
+.sidebar[data-collapsed="true"] .row { width:40px; justify-content:center; gap:0; padding:0; }
+.sidebar[data-collapsed="true"] .create { display:none; }
+@media (hover:hover) {
+  .sidebar :is(.row,.childRow,.thread):hover { background:rgb(248 248 250 / .07); }
+  .sidebar :is(.row,.childRow,.thread):is([aria-current="page"],[data-sidebar-active="true"]):hover { background:rgb(38 132 252 / .15); }
+}
+.subnav { min-width:0; max-width:100%; overflow:hidden; }
+.subnav[data-state="open"] { animation:openBranch 300ms var(--oathkeeper-nav-spring,ease-out); }
+.subnav[data-state="closed"] { animation:closeBranch 100ms ease-in-out; }
+@keyframes openBranch { from { height:0; } to { height:var(--radix-collapsible-content-height); } }
+@keyframes closeBranch { from { height:var(--radix-collapsible-content-height); } to { height:0; } }
+@media (prefers-reduced-motion:reduce) {
+  .sidebar *, .subnav { animation:none !important; transition:none !important; }
+  .create:active:not(:disabled) { transform:none; }
+}
+
+/* A full-width reference row, with a separate accessible expand target. */
+.branchRow { position: relative; min-width: 0; height: 36px; }
+.sidebar .branchRow > :is(.row, .childRow) { width: 100%; padding-right: 44px; }
+.branchToggle { position: absolute; right: 0; top: 0; width: 44px; height: 36px; display: flex; align-items: center; justify-content: flex-end; padding-right: 14px; border: 0; border-radius: 12px; background: transparent; color: var(--oathkeeper-ink); }
+.branchRow:has([data-sidebar-active="true"]) .branchToggle { color: var(--oathkeeper-nav-accent); }
+.branchToggle:focus-visible { outline: 2px solid var(--oathkeeper-nav-accent); outline-offset: -2px; }
+
+/* Mobile remains an overlay drawer, flush to the screen with safe-area padding. */
+@media (max-width: 1023px) {
+  .sidebar[data-mobile-open="true"] {
+    inset: 0 auto 0 0;
+    height: auto;
+    max-width: calc(100vw - 24px);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    background: var(--oathkeeper-sidebar);
+  }
+}
+
+/* The latest owner request reduces ALL raised plus/trigger corners to 8px.
+   Keep the original 12px radius on navigation rows, not on this plus button. */
+.sidebar .create { border-radius: var(--oathkeeper-control-radius, 8px); }
+
+/* CRM and VibeGhost share one muted chevron and the same trailing inset. */
+.sidebar .branchRow:has([data-sidebar-active="true"]) .chevron { color: var(--oathkeeper-nav-accent); }
+.sidebar .workspaceToggle { position:absolute; right:0; top:0; display:flex; width:44px; height:36px; flex:none; align-items:center; justify-content:flex-end; padding-right:14px; border-radius:12px; color:var(--oathkeeper-muted); }
+.sidebar .workspaceToggle:focus-visible { outline:2px solid var(--oathkeeper-nav-accent); outline-offset:-2px; }

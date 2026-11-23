@@ -1,0 +1,3 @@
+/* The shared page card owns the gutter on every screen size, so content
+   and the breadcrumb toolbar share the same left and right edges. */
+.content { padding: 0; }

@@ -1,0 +1,199 @@
+.panel {
+  composes: surface from "./dock-surface.module.css";
+  position: relative;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 22px;
+}
+.field {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  min-height: 76px;
+  resize: none;
+  border: 0;
+  border-radius: 15px;
+  padding: 13px 14px;
+  background: #141617;
+  color: #f3f2f1;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / .55), 0 1px 0 rgb(255 255 255 / .035), inset 0 0 0 1px rgb(0 0 0 / .30);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  outline: none;
+}
+/* Home keeps the terminal field's fixed one-line footprint; longer drafts
+   scroll inside the field without pushing its controls or toolbar around. */
+.panel.compactHome { border-radius: 16px; }
+.field.singleLine {
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  border-radius: 10px;
+  padding: 8px 80px 8px 12px;
+  font-family: var(--font-code);
+  font-size: 16px;
+  line-height: 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  white-space: pre-wrap;
+  -webkit-overflow-scrolling: touch;
+}
+/* The one-line field draws its placeholder as an overlay (.hint) so every
+   variant (idle, running, follow-up, image, session) ends in an ellipsis
+   before the mic and send buttons in every browser. Chromium ignores
+   text-overflow on a textarea placeholder and clips it mid-word under the
+   buttons. The native placeholder stays for assistive tech, transparent. */
+.field.singleLine::placeholder { color: transparent; }
+.field.singleLine:placeholder-shown { white-space: nowrap; overflow: hidden; }
+.hint {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: 80px;
+  overflow: hidden;
+  color: #686e6a;
+  font-family: var(--font-code);
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  user-select: none;
+}
+.hint[data-disabled] { opacity: .5; }
+.field::placeholder { color: #686e6a; font: inherit; opacity: 1; }
+.field:focus-visible { box-shadow: inset 0 1px 2px rgb(0 0 0 / .55), 0 1px 0 rgb(255 255 255 / .035), inset 0 0 0 1px rgb(69 146 237 / .55); }
+.field:disabled { opacity: .5; }
+.toolbar { display: flex; min-width: 0; align-items: center; gap: 6px; padding: 2px; }
+.toolbarMain { display: flex; min-width: 0; flex: 1; align-items: center; gap: 6px; }
+@media (min-width: 640px) and (pointer: fine) { .field { font-size: 14px; } }
+
+/* Each image has a self-contained filter ID. Grain is decorative, never an input layer.
+   Override only composer texture; keep the approved floating dock untouched. */
+.panel.panel::before,
+.sessionToolbar.sessionToolbar::before,
+.uploadStatus.uploadStatus::before,
+.noiseSurface::before {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%22160%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cfilter%20id%3D%22noise-bg-fx%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.8%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23noise-bg-fx%29%22%2F%3E%3C%2Fsvg%3E");
+  background-size: 160px 160px;
+  opacity: .10;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.noiseSurface {
+  composes: surface from "./dock-surface.module.css";
+  --dock-surface-radius: 12px;
+}
+
+/* The upload tab and the complete composer card are sibling layers. Keeping
+   the tab outside the card puts its overlap behind the card's own surface. */
+.terminalStack {
+  --terminal-resting-shadow: inset 0 1px 0 rgb(255 255 255 / .06), inset 0 0 0 1px rgb(255 255 255 / .035), 0 2px 4px rgb(0 0 0 / .16);
+  position: relative;
+  isolation: isolate;
+  /* Lift the entire attachment/composer context above the separate z-40
+     session toolbar. Inside it, attachments still sit behind the input rim. */
+  z-index: 50;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: 760px;
+  margin: 0;
+}
+.panel.terminal {
+  z-index: 1;
+  margin: 0;
+  border-radius: 16px;
+  /* The terminal composer rests in the page, rather than floating like the dock. */
+  box-shadow: var(--terminal-resting-shadow);
+}
+.uploadStatus { composes: surface from "./dock-surface.module.css"; }
+.uploadStatus.uploadStatus {
+  --dock-surface-radius: 16px;
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(100% - 12px);
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 12px 22px;
+  border-radius: 16px 16px 0 0;
+  color: #b7bcb9;
+  font-size: 12px;
+  line-height: 16px;
+  pointer-events: none;
+}
+/* The tab behind the resting terminal card is the same material, not a floating dock shadow. */
+.terminalStack .uploadStatus.uploadStatus { box-shadow: var(--terminal-resting-shadow); }
+/* One attachment slot for uploads and live speech. The local portal escapes
+   nested field positioning while retaining the exact upload-tab material. */
+.attachmentStack { position: relative; isolation: isolate; min-width: 0; width: 100%; }
+.attachmentStack > [data-composer-surface] { position: relative; z-index: 1; }
+.attachments { position: absolute; inset-inline: 0; bottom: calc(100% - 12px); z-index: 0; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+.attachments:empty { display: none; }
+.attachmentStack .attachments > .uploadStatus { position: relative; inset: auto; flex-shrink: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .attachmentStack .attachments > .uploadStatus { animation: attachment-enter 160ms cubic-bezier(.23, 1, .32, 1) both; }
+}
+@keyframes attachment-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.terminalRow { display:flex; min-width:0; align-items:center; gap:6px; }
+.terminalToolbar { min-width:0; padding:2px; }
+.terminalControls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 760px;
+  min-width: 0;
+  flex-shrink: 0;
+  margin: 4px auto calc(12px + var(--oathkeeper-content-dock-clearance, 0px));
+}
+/* Leave the upload/dictation tab visible between the two separate cards. */
+/* Upload and dictation attachments overlay upwards; neither changes the
+   toolbar/input gap or resizes the terminal when it appears. */
+.sessionToolbar {
+  composes: surface from './dock-surface.module.css';
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+  padding: 6px;
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), inset 0 0 0 1px rgb(255 255 255 / .035), 0 2px 4px rgb(0 0 0 / .16);
+}
+
+/* Phones and small tablets (where the dock shows): every composer control is a
+   36 px target and toolbar labels are 12 px, like chat v2. The one-line field
+   grows from 42 to 46 px so mic and send keep the same 5 px inset all round,
+   and the text/placeholder stop the same 8 px short of the mic. Desktop
+   (>= 1024 px) keeps the 32 px controls. */
+@media (max-width: 1023px) {
+  .field.singleLine { height: 46px; min-height: 46px; max-height: 46px; padding: 11px 88px 11px 12px; }
+  .hint { top: 11px; right: 88px; }
+  .micSlot { --dictation-action-inset: 40px !important; }
+  .micSlot > button, .sendSlot > button { width: 36px !important; height: 36px !important; }
+  .panel.compactHome [data-home-composer-controls] button { height: 36px; min-width: 36px; }
+  .panel.compactHome [data-home-composer-controls] button,
+  .panel.compactHome [data-home-composer-controls] button span { font-size: 12px; }
+}
+/* Below 360 px six 36 px controls leave the model name a few letters: the
+   toolbar tightens to 4 px gaps and the model chip drops its chevron. */
+@media (max-width: 359px) {
+  .panel.compactHome [data-home-composer-controls],
+  .panel.compactHome [data-home-composer-controls] > div,
+  .panel.compactHome [data-home-composer-controls] > div > div { gap: 4px; }
+  .panel.compactHome [data-home-composer-controls] [data-model-kind] { gap: 0; padding-inline: 8px; }
+  .panel.compactHome [data-home-composer-controls] [data-model-kind] > svg:last-child { display: none; }
+}
+

@@ -1,0 +1,142 @@
+/* Shared agent chat. Three type sizes only: 14px prose (user and assistant),
+   12.5px meta (author, tool rows, notes, controls) and 12px code. The thread is
+   transparent so it sits on the terminal surface, never on a gray panel. */
+.thread {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+  color: #e6e9e7;
+  font-family: var(--font-body, ui-sans-serif, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.scroller { height: 100%; min-height: 0; flex: 1; }
+/* The agent's queue, pinned above the composer and aligned with the column. */
+.footer { flex: none; width: 100%; max-width: 720px; margin: 0 auto; padding: 0 20px 10px; }
+:global([data-chat-compact]) .footer { padding: 0 12px 8px; }
+.column { width: 100%; max-width: 720px; min-height: 100%; margin: 0 auto; padding: 28px 20px 48px; }
+.turns { display: flex; flex-direction: column; gap: 28px; }
+/* The dock's mini chat (mini-chat.tsx) has a small window: tighter gutters and turns. */
+:global([data-chat-compact]) .column { padding: 14px 12px 24px; }
+:global([data-chat-compact]) .turns { gap: 18px; }
+
+/* User: a quiet bubble on the right. */
+.user { display: flex; justify-content: flex-end; min-width: 0; }
+.bubble { display: grid; gap: 8px; max-width: min(82%, 560px); min-width: 0; padding: 9px 14px; border-radius: 18px 18px 6px 18px; background: #18191b; box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), 0 0 0 1px rgb(255 255 255 / .05); color: #f4f7f5; overflow-wrap: anywhere; }
+.bubble p { margin: 0; white-space: pre-wrap; }
+.user[data-pending] .bubble { opacity: .55; }
+.userMessage { min-width: 0; }
+.userMessageText { line-height: 1.65; }
+.userMessageText[data-collapsed] { max-height: 9.9em; overflow: hidden; mask-image: linear-gradient(#000 60%, transparent); }
+.messageToggle { display: block; margin-top: 8px; padding: 4px 0; border: 0; border-radius: 3px; background: transparent; color: #c4c9c6; font: 500 12px/18px var(--font-body, sans-serif); cursor: pointer; }
+.messageToggle:hover { color: #fff; text-decoration: underline; }
+.messageToggle:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 2px; }
+
+/* Assistant: no container, a small author line, then blocks in order. */
+.assistant { display: flex; flex-direction: column; gap: 8px; min-width: 0; animation: turnIn 260ms cubic-bezier(.16, 1, .3, 1) both; }
+.author { display: flex; align-items: center; gap: 6px; height: 18px; margin-left: -2px; color: #8f9592; font-size: 12.5px; font-weight: 500; line-height: 18px; }
+.blocks { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.node { min-width: 0; }
+.note { margin: 0; color: #6f7571; font-size: 12.5px; line-height: 18px; }
+.system { display: flex; justify-content: center; }
+.system > span { max-width: 90%; padding: 3px 10px; border-radius: 999px; background: rgb(255 255 255 / .04); color: #7d837f; font-size: 12.5px; line-height: 18px; text-align: center; overflow-wrap: anywhere; }
+
+/* Markdown */
+.markdown { min-width: 0; color: #e6e9e7; overflow-wrap: anywhere; }
+.markdown > * { margin: 0; }
+.markdown > * + * { margin-top: .75em; }
+.markdown :is(h3, h4) { margin-top: 1.2em; color: #f4f7f5; font-size: 1em; font-weight: 600; line-height: 1.4; }
+.markdown h3 { font-size: 1.07em; }
+.markdown :is(ul, ol) { padding-left: 1.35em; }
+.markdown ul { list-style: disc; }
+.markdown ol { list-style: decimal; }
+.markdown li + li { margin-top: .3em; }
+.markdown li > p { display: inline; }
+.markdown li::marker { color: #6f7571; }
+.markdown strong { color: #f4f7f5; font-weight: 600; }
+.markdown a { color: #9dc4ff; text-decoration: underline; text-decoration-color: rgb(157 196 255 / .35); text-underline-offset: 2px; }
+.markdown a:hover { text-decoration-color: #9dc4ff; }
+.markdown code { padding: .1em .38em; border-radius: 5px; background: rgb(255 255 255 / .07); color: #eef1ef; font-family: var(--font-code, ui-monospace, monospace); font-size: 12px; }
+.markdown pre code { padding: 0; border-radius: 0; background: none; }
+.markdown blockquote { padding-left: 12px; border-left: 2px solid rgb(255 255 255 / .14); color: #9aa09c; }
+.markdown hr { border: 0; border-top: 1px solid rgb(255 255 255 / .08); }
+/* Sizing and the sideways scroll come from markdown-table.module.css. */
+.markdown table { border-collapse: collapse; }
+.markdown :is(th, td) { padding: 6px 10px; border: 1px solid rgb(255 255 255 / .08); text-align: left; }
+.markdown th { color: #f4f7f5; font-weight: 600; }
+.markdown img { max-width: 100%; height: auto; border-radius: 10px; }
+.markdown pre,
+.detail pre { max-width: 100%; overflow: auto; padding: 10px 12px; border-radius: 10px; background: #0e0f10; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .06); color: #d7dbd8; font: 12px/1.6 var(--font-code, ui-monospace, monospace); white-space: pre; }
+
+/* Tool calls: one quiet row each, consecutive calls grouped. */
+.tools { display: flex; flex-direction: column; min-width: 0; margin-inline: -8px; }
+.toolList { margin: 0; padding: 0; list-style: none; }
+.toolRow { min-width: 0; }
+.blocks > .toolRow { margin-inline: -8px; }
+.toolHead { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; height: 30px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: #8f9592; font: inherit; font-size: 12.5px; line-height: 18px; text-align: left; cursor: pointer; transition: background-color 120ms, color 120ms; }
+.toolHead:hover { background: rgb(255 255 255 / .04); color: #d7dbd8; }
+.toolHead:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.toolIcon { position: relative; display: grid; flex: none; place-items: center; width: 16px; height: 16px; color: #6f7571; }
+.glyph { width: 15px; height: 15px; transition: opacity 120ms; }
+.chevron { position: absolute; width: 12px; height: 12px; opacity: 0; transition: opacity 120ms, transform 150ms; }
+.toolHead:hover .glyph, .toolHead[aria-expanded="true"] .glyph { opacity: 0; }
+.toolHead:hover .chevron, .toolHead[aria-expanded="true"] .chevron { opacity: 1; }
+.toolHead[aria-expanded="true"] .chevron { transform: rotate(90deg); }
+.toolVerb { flex: none; }
+.toolTarget { min-width: 0; overflow: hidden; padding: 1px 6px; border-radius: 5px; background: rgb(255 255 255 / .05); color: #c4c9c6; font-family: var(--font-code, ui-monospace, monospace); font-size: 12px; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.thinkingPreview { min-width: 0; overflow: hidden; color: #6f7571; text-overflow: ellipsis; white-space: nowrap; }
+.toolStatus { display: flex; flex: none; align-items: center; margin-left: auto; color: #6f7571; font-size: 12.5px; }
+.toolRow[data-state="error"] :is(.toolVerb, .toolStatus, .toolIcon) { color: #e9aca3; }
+.toolRow[data-state="running"] .toolVerb { background: linear-gradient(90deg, #6f7571 0%, #e6e9e7 50%, #6f7571 100%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 1.6s linear infinite; }
+.detail { display: grid; gap: 6px; margin: 2px 8px 10px 31px; padding-left: 12px; border-left: 1px solid rgb(255 255 255 / .08); }
+.detail pre { max-height: 260px; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.detailLabel { color: #6f7571; font-size: 11px; font-weight: 500; letter-spacing: .05em; line-height: 16px; text-transform: uppercase; }
+.thinking .markdown { color: #9aa09c; }
+.moreTools { display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; height: 26px; margin: 0 0 2px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: #6f7571; font: inherit; font-size: 12.5px; cursor: pointer; }
+.moreTools:hover { background: rgb(255 255 255 / .04); color: #d7dbd8; }
+.images { display: flex; flex-wrap: wrap; gap: 8px; }
+.images img { max-width: min(100%, 360px); height: auto; border-radius: 10px; box-shadow: 0 0 0 1px rgb(255 255 255 / .06); }
+
+/* Working indicator: the same halftone field as AI commit drafting. */
+.working { display: flex; align-items: center; gap: 10px; height: 22px; margin-top: 22px; color: #8f9592; font-size: 12.5px; }
+.workingDots { position: relative; flex: none; width: 52px; height: 16px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }
+.workingDots canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Thread chrome */
+.earlier { display: flex; justify-content: center; margin-bottom: 24px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 999px; background: rgb(255 255 255 / .05); color: #9aa09c; font: inherit; font-size: 12.5px; cursor: pointer; transition: background-color 120ms, color 120ms; }
+.pill:hover:not(:disabled) { background: rgb(255 255 255 / .08); color: #f4f7f5; }
+.pill:disabled { opacity: .6; cursor: default; }
+.pill:focus-visible, .moreTools:focus-visible, .error button:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 2px; }
+.empty { display: flex; min-height: 200px; align-items: center; justify-content: center; gap: 10px; color: #6f7571; font-size: 12.5px; text-align: center; }
+.empty[data-loading] { flex: 1; min-height: min(56vh, 420px); }
+/* In a small window the loader fills the visible conversation instead of a 420px block taller than
+   it, so it sits centred where the session's skeleton drew it, rather than scrolled out of place. */
+:global([data-chat-compact]) .empty[data-loading] { min-height: 0; }
+/* The session skeleton's loader (vibeghost-view.tsx SessionLoadingSkeleton) takes the column's
+   vertical padding, so its orb is centred exactly where this thread's loader then draws it. */
+.loaderPad { display: flex; height: 100%; flex: 1; align-items: center; justify-content: center; padding: 28px 0 48px; }
+:global([data-chat-compact]) .loaderPad { padding: 14px 0 24px; }
+.error { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; padding: 8px 8px 8px 12px; border-radius: 10px; background: rgb(233 172 163 / .07); box-shadow: inset 0 0 0 1px rgb(233 172 163 / .16); color: #e9aca3; font-size: 12.5px; line-height: 18px; }
+.error > span { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.error button { flex: none; height: 24px; padding: 0 8px; border: 0; border-radius: 6px; background: rgb(233 172 163 / .1); color: inherit; font: inherit; font-weight: 500; cursor: pointer; }
+.scrollDock { pointer-events: none; position: absolute; inset-inline: 0; bottom: 14px; display: flex; justify-content: center; }
+
+@keyframes turnIn { from { opacity: 0; transform: translateY(4px); } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (max-width: 640px) {
+  .column { padding: 20px 14px 40px; }
+  .loaderPad { padding: 20px 0 40px; }
+  .bubble { max-width: 88%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assistant { animation: none; }
+  .toolRow[data-state="running"] .toolVerb { animation: none; color: #d7dbd8; background: none; }
+  .toolHead, .glyph, .chevron, .pill { transition: none; }
+}

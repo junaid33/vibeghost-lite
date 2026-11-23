@@ -1,0 +1,44 @@
+/* Home: no card of its own; the agents' orbs and the rundown sit straight on the page
+   canvas, as chat bubbles do, in a column centred on it (contents aligned left), clear of the
+   phone dock. */
+.page { display: flex; min-width: 0; min-height: 0; height: 100%; flex: 1; flex-direction: column; }
+.brief { position: relative; display: flex; min-width: 0; min-height: 0; flex: 1; flex-direction: column; overflow: hidden; }
+.brief[data-leaving] { pointer-events: none; animation: brief-out 260ms cubic-bezier(.4, 0, .2, 1) forwards; }
+@keyframes brief-out { to { opacity: 0; transform: translateY(-10px) scale(.99); filter: blur(6px); } }
+@keyframes brief-in { from { opacity: 0; transform: translateY(8px); } }
+
+.scroll { display: flex; min-height: 0; flex: 1; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; padding: clamp(24px, 5vw, 56px) clamp(20px, 5vw, 56px) calc(clamp(24px, 5vw, 56px) + var(--oathkeeper-content-dock-clearance, 0px)); }
+/* Auto margins centre the block yet let a tall one scroll from its top. */
+.copy { display: grid; justify-items: start; gap: 14px; width: 100%; max-width: 760px; min-width: 0; margin: auto; text-align: left; animation: brief-in 420ms cubic-bezier(.2, .8, .2, 1) both; }
+.rundown { margin: 0; color: #6f7571; font-size: clamp(28px, 4.4vw, 46px); font-weight: 500; line-height: 1.2; letter-spacing: -.028em; text-wrap: balance; }
+/* While the counts load, their icons wait muted beside them. */
+.rundown[aria-busy="true"] .lead > svg { opacity: .35; }
+.chip { color: #f4f7f5; text-decoration: none; }
+.lead { white-space: nowrap; }
+.lead > svg { display: inline-block; width: .8em; height: .8em; margin: 0 .2em 0 .02em; vertical-align: -.1em; color: #b7bcb9; transition: opacity 280ms ease; }
+.chip[data-tone="events"] svg { color: #8bb8ff; }
+.chip[data-tone="blocked"] svg { color: #e67b73; }
+.chip[data-tone="waiting"] svg { color: #e2b85f; }
+.chip[data-tone="doing"] svg { color: #7fd1a8; }
+.chip[data-tone="todo"] svg { color: #9fb4c7; }
+.chip[data-tone="curator"] svg { color: #c9a7f5; }
+.chip[data-tone="agents"] svg { color: #d97757; }
+.chip[data-tone="clear"] svg { color: #f2c94c; }
+a.chip:hover { text-decoration: underline; text-decoration-color: rgb(244 247 245 / .28); text-decoration-thickness: 2px; text-underline-offset: .14em; }
+a.chip:focus-visible { border-radius: 4px; outline: 2px solid #8bb8ff; outline-offset: 3px; }
+
+/* The agents: each one's orb, held on its colour (agent-orb.tsx), opens its chat page. They sit
+   where the one Oathkeeper orb sat, above the rundown. */
+.agents { display: flex; flex: none; gap: 14px; margin-bottom: 6px; }
+.agent { display: grid; width: 64px; height: 64px; flex: none; place-items: center; border-radius: 50%; transition: transform 160ms cubic-bezier(.2, .8, .2, 1); }
+.agent:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 4px; }
+@media (hover: hover) { .agent:hover { transform: scale(1.06); } }
+.agent:active { transform: scale(.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  .copy { animation: none; }
+  .lead > svg { transition: none; }
+  .agent { transition: none; }
+  /* Still ends, so the chosen page opens; just without the movement. */
+  .brief[data-leaving] { animation-duration: 1ms; }
+}

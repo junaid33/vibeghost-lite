@@ -1,0 +1,8 @@
+/* Agent markdown tables keep their natural column widths (no squeezed columns or letter-by-letter
+   wrapping); a table wider than the column scrolls sideways inside its own box. */
+.scroll { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.scroll > table { display: table; width: max-content; min-width: 100%; max-width: none; overflow: visible; }
+.scroll :is(th, td) { overflow-wrap: normal; word-break: normal; }
+/* Streamdown's default table already sits in an overflow-x box; only its width changes. */
+.streamdown :global([data-streamdown="table"]) { width: max-content; min-width: 100%; }
+.streamdown :global(:is([data-streamdown="table-cell"], [data-streamdown="table-header-cell"])) { overflow-wrap: normal; word-break: normal; }

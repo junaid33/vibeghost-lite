@@ -1,0 +1,84 @@
+/* Resume / Stop / Delete sessions. Metrics are lifted from Landing's live refresh dialog
+   (custom-app-packages/landing/src/landing-view.module.css, rev 32): stat tiles, the progress
+   line, raised unit cards with the dot on the title line, mono step tags, and the halftone
+   field behind the card being worked on. */
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+.stat { display: grid; min-width: 0; gap: 4px; padding: 11px 12px 12px; border-radius: 11px; background: linear-gradient(180deg, #201f22, #1b1b1d); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 1px 0 rgb(0 0 0 / .5), 0 1px 2px rgb(0 0 0 / .25); }
+.stat > span { color: #7c817e; font-size: 11px; font-weight: 500; }
+.stat > strong { color: #7c817e; font-size: 22px; font-weight: 600; letter-spacing: -.02em; line-height: 26px; font-variant-numeric: tabular-nums; }
+.stat > strong[data-tone="done"] { color: #8bb8ff; }
+.stat > strong[data-tone="failed"] { color: #f0a3a9; }
+
+.progress { position: relative; height: 3px; margin: -6px 4px 0; overflow: hidden; border-radius: 3px; background: rgb(255 255 255 / .06); }
+.progress > span { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: linear-gradient(90deg, #2684fc, #8bb8ff); transform-origin: left center; transition: transform 500ms cubic-bezier(.2, .7, .2, 1); }
+.progress[data-running] > span::after { position: absolute; inset: 0; content: ""; background: linear-gradient(90deg, transparent 0 35%, rgb(255 255 255 / .55) 50%, transparent 65% 100%) 0 0 / 300% 100% no-repeat; animation: session-manager-sweep 1.4s linear infinite; }
+
+/* Caption row: "Sessions 3/11" on the left, Select all on the right. */
+.captionRow { display: flex; min-width: 0; align-items: baseline; justify-content: space-between; gap: 8px; }
+.count { margin-left: 4px; color: #565b58; font-variant-numeric: tabular-nums; }
+.selectAll { padding: 0 4px; border: 0; border-radius: 4px; background: none; color: #8bb8ff; font-size: 11px; font-weight: 500; cursor: pointer; }
+.selectAll:hover:not(:disabled) { text-decoration: underline; }
+.selectAll:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 2px; }
+.selectAll:disabled { cursor: default; opacity: .45; }
+
+/* The band scrolls; only its contents fade. */
+.scroll.scroll { position: relative; max-height: min(400px, 46dvh); min-width: 0; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: #565b58 transparent; --oathkeeper-fade-size: 16px; animation: none; }
+.scroll:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; border-radius: 8px; }
+.list { display: grid; min-width: 0; gap: 3px; margin: 0; padding: 0; list-style: none; }
+
+.card { position: relative; display: grid; min-width: 0; gap: 2px; padding: 10px 12px 10px 26px; overflow: hidden; isolation: isolate; border-radius: 10px; background: linear-gradient(180deg, #201f22, #1b1b1d); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 1px 0 rgb(0 0 0 / .5), 0 1px 2px rgb(0 0 0 / .25); transition: opacity 240ms ease, box-shadow 240ms ease; }
+label.card { cursor: pointer; }
+label.card:hover:not([data-selected]) { background: linear-gradient(180deg, #232226, #1d1d20); }
+.card:has(input:focus-visible) { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.card[data-selected], .card[data-step="done"][data-action="resume"] { background: linear-gradient(180deg, #1e2431, #1a1e28); box-shadow: inset 0 0 0 1px rgb(139 184 255 / .16), inset 0 1px 0 rgb(255 255 255 / .06), 0 1px 0 rgb(0 0 0 / .5); }
+.card[data-step="failed"] { background: linear-gradient(180deg, #2a1f23, #221a1d); box-shadow: inset 0 0 0 1px rgb(240 163 169 / .14), inset 0 1px 0 rgb(255 255 255 / .05), 0 1px 0 rgb(0 0 0 / .5); }
+.card[data-step="pending"] { background: linear-gradient(180deg, #26241f, #1f1e1b); box-shadow: inset 0 0 0 1px rgb(227 197 141 / .12), inset 0 1px 0 rgb(255 255 255 / .05), 0 1px 0 rgb(0 0 0 / .5); }
+
+/* The status dot sits on the title line: blue while the session is running, gray once it has exited. */
+.dot { position: absolute; top: 16px; left: 11px; width: 6px; height: 6px; border-radius: 50%; background: #565b58; }
+.dot[data-tone="live"] { background: #2684fc; box-shadow: 0 0 10px rgb(38 132 252 / .85), inset 0 1px 0 rgb(255 255 255 / .25); }
+.dot[data-tone="failed"] { background: #ef626d; box-shadow: 0 0 10px rgb(239 98 109 / .7), inset 0 1px 0 rgb(255 255 255 / .2); }
+
+.head { display: flex; min-width: 0; align-items: center; gap: 8px; }
+.head > strong { min-width: 0; overflow: hidden; color: #f4f7f5; font-size: 13px; font-weight: 500; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.tag { flex: none; margin-left: auto; color: #7c817e; font: 600 10px/16px var(--font-geist-mono), ui-monospace, monospace; letter-spacing: .02em; white-space: nowrap; }
+.tag[data-tone="working"] { color: #b5d0ff; }
+.tag[data-tone="done"] { color: #8bb8ff; }
+.tag[data-tone="failed"] { color: #f0a3a9; }
+.tag[data-tone="pending"] { color: #e3c58d; }
+/* The selection well: the dialog kit's inset input well, a check once chosen. */
+.check { display: grid; width: 18px; height: 18px; flex: none; margin-left: auto; place-items: center; border-radius: 6px; background: rgb(0 0 0 / .35); box-shadow: inset 0 1px 2px rgb(0 0 0 / .5), 0 1px 0 rgb(255 255 255 / .04); color: #b5d0ff; }
+.check svg { width: 12px; height: 12px; }
+.card[data-selected] .check { background: rgb(38 132 252 / .2); box-shadow: inset 0 0 0 1px rgb(139 184 255 / .32), inset 0 1px 0 rgb(255 255 255 / .06); }
+
+.meta { display: flex; min-width: 0; align-items: center; gap: 5px; color: #9aa59f; font-size: 10px; line-height: 14px; white-space: nowrap; }
+.meta svg[data-session-agent-mark] { width: 9px; height: 9px; flex: none; }
+.meta svg[data-session-agent-mark="pi"] { width: 8px; height: 8px; margin-inline: 0; }
+.meta time { font-variant-numeric: tabular-nums; }
+.error { color: #d8bd9f; font-size: 10.5px; line-height: 15px; }
+
+.halftone { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; border-radius: inherit; pointer-events: none; opacity: .3; -webkit-mask-image: linear-gradient(90deg, rgb(0 0 0 / .3), #000 75%); mask-image: linear-gradient(90deg, rgb(0 0 0 / .3), #000 75%); animation: session-manager-dots-in 360ms ease-out; }
+
+/* Waiting cards are dim. The one being worked on lifts a little and carries the halftone field;
+   a finished card settles in, tinted by how it went. */
+.card[data-step="queued"] { opacity: .5; }
+.card[data-step="skipped"] { opacity: .62; }
+.card[data-step="working"] { background: linear-gradient(180deg, #232226, #1d1d20); }
+.card[data-step="done"], .card[data-step="pending"], .card[data-step="failed"] { animation: session-manager-settle 520ms cubic-bezier(.2, .7, .2, 1); }
+.card[data-step="done"][data-action="delete"] { opacity: .5; }
+
+.empty { display: grid; gap: 2px; padding: 12px; }
+.empty strong { color: #f4f7f5; font-size: 13px; font-weight: 500; }
+.empty small { color: #7c817e; font-size: 11.5px; line-height: 16px; }
+
+@keyframes session-manager-sweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes session-manager-dots-in { from { opacity: 0; } }
+@keyframes session-manager-settle { from { filter: brightness(1.45); transform: scale(.985); } }
+@media (pointer: coarse) { .selectAll { min-height: 32px; } }
+@media (prefers-reduced-motion: reduce) {
+  .progress > span, .card { transition: none; }
+  .progress[data-running] > span::after { animation: none; background-position: 50% 0; }
+  .halftone { animation: none; }
+  .card[data-step="done"], .card[data-step="pending"], .card[data-step="failed"] { animation: none; }
+}

@@ -1,0 +1,187 @@
+/* Hallmark · pre-emit critique: P5 H4 E5 S5 R5 V4
+ * Hallmark · genre: modern-minimal · macrostructure: Chat Composer · tone: technical-utilitarian
+ * design-system: design.md · designed-as-app · reference: Beautiful UI
+ */
+/* Shared Oathkeeper chrome. Palette/shadows sampled from Lab01 UI #09
+ * (https://lab01.dev/experiments/13/). The page canvas stays near-black;
+ * the reference's #1f1f1f and #303030 belong to sidebar/panel surfaces. */
+:root {
+  --oathkeeper-canvas: #08090a;
+  --oathkeeper-sidebar: #1f1f1f;
+  /* The approved session-card gray is the single raised-surface source. */
+  --oathkeeper-session-surface: #333333;
+  --oathkeeper-panel: var(--oathkeeper-session-surface);
+  --oathkeeper-control: var(--oathkeeper-session-surface);
+  --oathkeeper-control-radius: 8px;
+  --oathkeeper-control-ink: #f8f8fa;
+  --oathkeeper-control-shadow: rgba(15, 15, 15, 0.3) 0px 0px 0px 1px, rgba(0, 0, 0, 0.02) 0px 13px 5px 0px, rgba(0, 0, 0, 0.07) 0px 7px 4px 0px, rgba(0, 0, 0, 0.13) 0px 3px 3px 0px, rgba(0, 0, 0, 0.15) 0px 1px 2px 0px, rgba(255, 255, 255, 0.08) 0px 0px 2px 0px inset, rgba(0, 0, 0, 0.3) 0px -2px 0px 0px inset, rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset;
+  --oathkeeper-field-shadow: 0 1px 0 rgb(211 221 238 / .1), inset 0 1px 1px rgb(0 0 0 / .25);
+  --oathkeeper-nav-spring: linear(0, .0018, .007 1.16%, .0264 2.32%, .065, .1161 5.23%, .2294 7.84%, .6219 15.97%, .7307 18.58%, .8142, .8845 23.23%, .9479, .9955 28.45%, 1.0159, 1.0323 31.35%, 1.0492, 1.0602 35.42%, 1.0666 37.74%, 1.0679 40.35%, 1.0651 42.68%, 1.059 45.29%, 1.028 54.87%, 1.0158 59.22%, 1.0071, 1.0011 67.35%, .997 72.29%, .9954 78.1%, .9991 99.87%);
+  --oathkeeper-field: #1f1f1f;
+  --oathkeeper-hover: #3d3d3d;
+  --oathkeeper-ink: #f8f8fa;
+  --oathkeeper-muted: #79808b;
+  --oathkeeper-nav-accent: #2684fc;
+  --oathkeeper-panel-shadow: 0 0 0 1px rgb(0 0 0 / .07),
+    0 73px 29px rgb(0 0 0 / .01), 0 41px 24px rgb(0 0 0 / .05),
+    0 18px 18px rgb(0 0 0 / .09), 0 5px 10px rgb(0 0 0 / .1),
+    inset 0 1px 0 rgb(255 255 255 / .07), inset 0 0 0 1px rgb(255 255 255 / .05);
+  /* Okara / Trader / Curator materials (okara/src/ui.css --ok-*, trader --tr-*): one source for app cards. */
+  --oathkeeper-ink-2: #d7dbd8;
+  --oathkeeper-ink-3: #b7bcb9;
+  --oathkeeper-faint: #7c817e;
+  --oathkeeper-label: #6f7571;
+  --oathkeeper-body: #a3a9a5;
+  --oathkeeper-focus: #8bb8ff;
+  --oathkeeper-chart: #5aa2f5;
+  --oathkeeper-hair: rgb(255 255 255 / .055);
+  --oathkeeper-track: #0e0e0f;
+  /* Text inks of the dark app cards (Curator, Studio, Designer, Lightbox): one place to change them. */
+  --oathkeeper-text: #f4f7f5;
+  --oathkeeper-dim: #919793;
+  --oathkeeper-recess: inset 0 1px 2px rgb(0 0 0 / .5), 0 1px 0 rgb(255 255 255 / .04);
+  --oathkeeper-raised: linear-gradient(180deg, #201f22, #1b1b1d);
+  --oathkeeper-raised-hover: linear-gradient(180deg, #252427, #1f1f21);
+  --oathkeeper-raised-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 1px 0 rgb(0 0 0 / .5), 0 1px 2px rgb(0 0 0 / .25);
+  --oathkeeper-band: linear-gradient(180deg, #171619, #141416);
+  --oathkeeper-band-shadow: inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .3), 0 1px 0 rgb(255 255 255 / .035);
+  --oathkeeper-card-shadow: inset 0 1px 0 rgb(255 255 255 / .08), inset 0 0 0 1px rgb(0 0 0 / .55), 0 2px 6px rgb(0 0 0 / .3);
+
+  color-scheme: light;
+
+  --color-page: oklch(0.9854 0.0013 286.38);
+  --color-canvas: oklch(0.9607 0.0017 247.84);
+  --color-surface: oklch(1 0 0);
+  --color-inset: oklch(0.9787 0.0017 247.84);
+  --color-hover: oklch(0.9697 0.0017 247.84);
+  --color-hover-2: oklch(0.9331 0.0035 247.86);
+  --color-ink: oklch(0.2469 0.0064 258.36);
+  --color-ink-2: oklch(0.5062 0.0102 264.48);
+  --color-ink-3: oklch(0.6954 0.0094 264.50);
+  --color-line: oklch(0.9459 0.0029 264.54);
+  --color-line-strong: oklch(0.9121 0.0046 258.33);
+  --color-field: oklch(0.9614 0.0013 286.38);
+  --color-accent: oklch(0.6258 0.2050 254.95);
+  --color-accent-ink: oklch(0.5564 0.1869 255.62);
+  --color-accent-tint: oklch(0.9602 0.0194 252.88);
+  --color-green: oklch(0.6031 0.1555 150.88);
+  --color-green-tint: oklch(0.9582 0.0173 159.12);
+  --color-orange: oklch(0.6888 0.1794 49.90);
+  --color-orange-tint: oklch(0.9643 0.0206 67.58);
+  /* Robinhood Gold's verified deep-to-light metallic palette. */
+  --color-gold-light: #cfb97d;
+  --color-gold-deep: #94814c;
+  --color-red: oklch(0.6211 0.1924 23.04);
+  --color-red-tint: oklch(0.9557 0.0174 17.46);
+  --color-focus: oklch(0.6258 0.2050 254.95);
+
+  --color-gradient-icon-ink: oklch(1 0 0);
+
+  --font-display: var(--font-inter), ui-sans-serif, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, sans-serif;
+  --font-code: var(--font-geist-mono), ui-monospace, monospace;
+
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-display: clamp(2.5rem, 5vw, 4.75rem);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  --radius-chip: 6px;
+  --radius-control: 8px;
+  --radius-card: 10px;
+  --radius-window: 12px;
+  --rule-thin: 1px;
+
+  --shadow-hairline: 0 0 0 1px var(--color-line);
+  --shadow-button: 0 0 0 1px var(--color-line-strong), 0 1px 2px oklch(0.2 0.006 260 / 0.05);
+  --shadow-gradient-icon: inset 0 0 0 1px oklch(1 0 0 / 0.16);
+  --shadow-gradient-arrow: 0 1px 1px oklch(0.15 0.01 260 / 0.70);
+  --shadow-card: 0 0 0 1px var(--color-line), 0 1px 3px oklch(0.2 0.006 260 / 0.04);
+  --shadow-raised: 0 0 0 1px var(--color-line), 0 2px 10px oklch(0.2 0.006 260 / 0.045);
+  --shadow-overlay: 0 0 0 1px var(--color-line), 0 8px 28px oklch(0.2 0.006 260 / 0.07);
+  --shadow-inset-field: inset 0 1px 2px oklch(0.2 0.006 260 / 0.12);
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 200;
+  --z-modal: 400;
+  /* Radix menus/selects are portalled to <body>. They must sit above an
+     active modal rather than inheriting the dialog's stacking context. */
+  --z-dropdown: 450;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  --page: var(--color-page);
+  --canvas: var(--color-canvas);
+  --surface: var(--color-surface);
+  --inset: var(--color-inset);
+  --hover: var(--color-hover);
+  --hover-2: var(--color-hover-2);
+  --ink: var(--color-ink);
+  --ink-2: var(--color-ink-2);
+  --ink-3: var(--color-ink-3);
+  --line: var(--color-line);
+  --line-strong: var(--color-line-strong);
+  --field: var(--color-field);
+  --signal: var(--color-accent);
+  --signal-ink: var(--color-accent-ink);
+  --signal-tint: var(--color-accent-tint);
+  --green: var(--color-green);
+  --green-tint: var(--color-green-tint);
+  --orange: var(--color-orange);
+  --orange-tint: var(--color-orange-tint);
+  --gold-light: var(--color-gold-light);
+  --gold-deep: var(--color-gold-deep);
+  --red: var(--color-red);
+  --red-tint: var(--color-red-tint);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Keep the page, app canvas, and in-flow dock on one continuous background. */
+  --color-page: var(--oathkeeper-canvas);
+  --color-canvas: var(--oathkeeper-canvas);
+  --color-surface: var(--oathkeeper-panel);
+  --color-inset: var(--oathkeeper-field);
+  --color-hover: var(--oathkeeper-hover);
+  --color-hover-2: var(--oathkeeper-hover);
+  --color-ink: oklch(0.9637 0.0017 247.84);
+  --color-ink-2: oklch(0.7307 0.0080 260.73);
+  --color-ink-3: oklch(0.5411 0.0100 264.48);
+  --color-line: oklch(0.3084 0.0061 258.35);
+  --color-line-strong: oklch(0.3557 0.0074 264.47);
+  --color-field: var(--oathkeeper-field);
+  --color-accent: oklch(0.6803 0.1728 253.30);
+  --color-accent-ink: oklch(0.7881 0.1127 248.33);
+  --color-accent-tint: oklch(0.6803 0.1728 253.30 / 0.16);
+  --color-green: oklch(0.696 0.16 151);
+  --color-green-tint: oklch(0.696 0.16 151 / 0.14);
+  --color-orange: oklch(0.74 0.16 53);
+  --color-orange-tint: oklch(0.74 0.16 53 / 0.14);
+  --color-red: oklch(0.68 0.19 23);
+  --color-red-tint: oklch(0.68 0.19 23 / 0.14);
+  --color-focus: oklch(0.7881 0.1127 248.33);
+}

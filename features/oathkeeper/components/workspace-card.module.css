@@ -1,0 +1,74 @@
+/* Shared workspace card material (Active Feed, session picker, Workspaces list,
+   workspace page). Compose these instead of copying values.
+   card: noisy surface (the search bar's noise texture) with a 1px dark outline,
+         light top lip and soft drop; 16px corners, 5px inset.
+   band: recessed title band (track gradient + composer field inset shadow),
+         11px corners so it nests inside the card's inset.
+   Spacing below a band belongs to the content after it, so a collapsed card
+   has no extra bottom space. */
+.card { position: relative; isolation: isolate; min-width: 0; padding: 5px; border-radius: 16px; background: #111213; box-shadow: 0 0 0 1px rgb(0 0 0 / .55), inset 0 1px 0 rgb(255 255 255 / .08), 0 2px 6px rgb(0 0 0 / .3); }
+.card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%22160%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cfilter%20id%3D%22noise-bg-fx%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.8%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23noise-bg-fx%29%22%2F%3E%3C%2Fsvg%3E"); background-size: 160px 160px; opacity: .08; mix-blend-mode: screen; pointer-events: none; }
+.band { border-radius: 11px; background: linear-gradient(180deg, #171619, #141416); box-shadow: inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .3), 0 1px 0 rgb(255 255 255 / .035); }
+
+/* Okara / Trader / Curator controls and pieces (values: okara/src/ui.css, trader/src/ui.css,
+   curator-view.module.css; tokens in tokens.css). Compose these; never copy the values.
+   track:      recessed well that holds raised pills (segments, rail links, buttons sharing a well).
+   pill:       the button inside a card: a 28px raised face in its own 2px track moat.
+               Inside a .track it becomes a 30px pill with the raised shadow. data-primary = blue.
+   segments:   Curator's segmented control: a track of 30px pills, the checked one raised.
+   iconButton: quiet 28px square that lights on hover.
+   label:      the one mono uppercase label (12px floor).
+   raised:     a raised row/tile surface that lifts on hover.
+   tile:       a stat tile (label, big tabular value, sub line), in a .tiles grid.
+   bars:       labelled bar rows (label | track | value).
+   empty:      centred empty state with a raised icon tile. */
+.track { display: inline-flex; min-width: 0; max-width: 100%; gap: 3px; padding: 3px; border-radius: 10px; background: var(--oathkeeper-track); box-shadow: var(--oathkeeper-recess); overflow-x: auto; scrollbar-width: none; }
+.pill { display: inline-flex; height: 28px; flex: none; align-items: center; justify-content: center; gap: 6px; margin: 2px; padding: 0 11px; border: 0; border-radius: 7px; background: var(--oathkeeper-raised); box-shadow: 0 0 0 2px var(--oathkeeper-track), 0 1px 0 2px rgb(255 255 255 / .04), inset 0 1px 0 rgb(255 255 255 / .06); color: #f4f7f5; font-family: var(--font-body), sans-serif; font-size: 12px; font-weight: 500; line-height: 20px; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background 120ms ease, transform 100ms ease; }
+.pill > svg { width: 14px; height: 14px; flex: none; color: var(--oathkeeper-ink-3); }
+.pill:active:not(:disabled) { transform: translateY(1px); }
+.pill:disabled { cursor: default; opacity: .45; }
+.pill:focus-visible, .iconButton:focus-visible, .segments > button:focus-visible { outline: 2px solid var(--oathkeeper-focus); outline-offset: -2px; }
+.pill[data-primary] { background: linear-gradient(180deg, #1b2c44, #16253a); color: #cfe2fc; }
+.pill[data-primary] > svg { color: #cfe2fc; }
+.pill[data-state="open"] { background: var(--oathkeeper-raised-hover); }
+@media (hover: hover) {
+  .pill:hover:not(:disabled) { background: var(--oathkeeper-raised-hover); }
+  .pill[data-primary]:hover:not(:disabled) { background: linear-gradient(180deg, #213551, #1a2c45); }
+}
+.track > .pill { height: 30px; margin: 0; box-shadow: var(--oathkeeper-raised-shadow); }
+.segments { composes: track; }
+.segments > button { display: inline-flex; min-height: 30px; flex: none; align-items: center; gap: 7px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: #919793; font-size: 12px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: color 120ms ease; }
+.segments > button:hover { color: var(--oathkeeper-ink-2); }
+.segments > button:is([aria-checked="true"], [aria-pressed="true"], [aria-selected="true"], [data-state="active"]) { background: var(--oathkeeper-raised); box-shadow: var(--oathkeeper-raised-shadow); color: #f4f7f5; }
+.segments > button > small { color: var(--oathkeeper-label); font: 500 12px/16px var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+/* In a 38px band: the same control with 24px pills. */
+.segments[data-size="band"] { gap: 2px; padding: 2px; border-radius: 9px; }
+.segments[data-size="band"] > button { min-height: 24px; padding: 0 9px; }
+.iconButton { display: grid; width: 28px; height: 28px; flex: none; place-items: center; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--oathkeeper-faint); cursor: pointer; transition: background 120ms ease, color 120ms ease; }
+.iconButton:hover, .iconButton[aria-pressed="true"] { background: rgb(255 255 255 / .07); color: #f4f7f5; }
+.iconButton > svg { width: 14px; height: 14px; }
+.label { color: var(--oathkeeper-label); font: 500 12px/16px var(--font-geist-mono), ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.bandTitle { min-width: 0; margin: 0; overflow: hidden; color: #f4f7f5; font-size: 13px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.raised { border-radius: 11px; background: var(--oathkeeper-raised); box-shadow: var(--oathkeeper-raised-shadow); transition: background 120ms ease; }
+@media (hover: hover) { .raised:is(a, button, :has(> a, > button)):hover { background: var(--oathkeeper-raised-hover); } }
+.tiles { display: grid; min-width: 0; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 5px; }
+.tile { composes: raised; display: grid; min-width: 0; align-content: start; gap: 4px; padding: 10px 12px 11px; }
+.tile > strong { min-width: 0; overflow: hidden; color: #f4f7f5; font-size: 20px; font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: -.02em; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; }
+.tileSub { display: flex; min-width: 0; gap: 6px; overflow: hidden; color: var(--oathkeeper-faint); font-size: 12px; line-height: 16px; white-space: nowrap; }
+.tileSub[data-tone="positive"] { color: #a8e9b8; }
+.tileSub[data-tone="negative"] { color: #f0a3a9; }
+.bars { display: grid; min-width: 0; margin: 0; padding: 0 4px; list-style: none; }
+.bars > li { display: grid; min-width: 0; min-height: 30px; grid-template-columns: minmax(0, 1.2fr) minmax(48px, 1fr) auto; align-items: center; gap: 10px; padding: 0 4px; border-radius: 7px; }
+.bars > li + li { border-top: 1px solid var(--oathkeeper-hair); }
+.barLabel { min-width: 0; overflow: hidden; color: var(--oathkeeper-ink-2); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.barTrack { height: 6px; overflow: hidden; border-radius: 4px; background: rgb(255 255 255 / .05); }
+.barTrack > span { display: block; height: 100%; border-radius: 4px; background: var(--oathkeeper-chart); }
+.barValue { min-width: 34px; color: #f4f7f5; font: 500 12px/16px var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; text-align: right; }
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 40px 20px; color: #919793; font-size: 13px; line-height: 19px; text-align: center; }
+.empty > strong { color: #f4f7f5; font-size: 15px; font-weight: 600; line-height: 20px; }
+.emptyIcon { display: grid; width: 44px; height: 44px; margin-bottom: 4px; place-items: center; border-radius: 13px; background: var(--oathkeeper-raised); box-shadow: var(--oathkeeper-raised-shadow); color: var(--oathkeeper-ink-3); }
+.emptyIcon > svg { width: 20px; height: 20px; }
+.cardFoot { display: flex; min-width: 0; align-items: center; gap: 8px; margin: 5px -5px -5px; padding: 8px 16px 9px; border-top: 1px solid rgb(255 255 255 / .06); border-radius: 0 0 16px 16px; background: rgb(0 0 0 / .2); color: var(--oathkeeper-faint); font-size: 12px; }
+.sheen { display: block; height: 12px; border-radius: 5px; background: linear-gradient(90deg, rgb(244 247 245 / .04), rgb(244 247 245 / .085), rgb(244 247 245 / .04)); background-size: 220% 100%; animation: workspace-sheen 1.2s linear infinite; }
+@keyframes workspace-sheen { from { background-position: 100% 0; } to { background-position: -120% 0; } }
+@media (prefers-reduced-motion: reduce) { .sheen { animation: none; } .pill { transition: none; } }

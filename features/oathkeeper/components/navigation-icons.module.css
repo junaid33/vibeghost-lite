@@ -1,0 +1,5 @@
+/* Local DuoIcons paths; three quiet material tones without outlines. */
+.icon[data-navigation-icon=home] > g > path:nth-of-type(2) { fill-opacity: .65; }
+.icon[data-navigation-icon=home] > g > path:nth-of-type(4) { fill-opacity: .7; }
+.icon[data-navigation-icon=products] > g > path:nth-of-type(3) { fill-opacity: .7; }
+.icon[data-navigation-icon=products] > g > path:nth-of-type(4) { fill-opacity: .65; }

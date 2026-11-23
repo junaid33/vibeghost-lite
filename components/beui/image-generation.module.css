@@ -1,0 +1,59 @@
+.root {
+  width: 208px;
+  max-width: 100%;
+}
+
+.surface {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--oathkeeper-panel);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--oathkeeper-ink);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--oathkeeper-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mark {
+  display: grid;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  grid-template-columns: repeat(2, 1fr);
+  place-items: center;
+  animation: turn 2.4s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+.mark > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.mark > span:nth-child(2),
+.mark > span:nth-child(3) { opacity: 0.55; }
+
+.root[data-motion='paused'] .mark { animation-play-state: paused; }
+
+@keyframes turn { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mark { animation: none; }
+}

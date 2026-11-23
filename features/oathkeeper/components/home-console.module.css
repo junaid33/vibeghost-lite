@@ -1,0 +1,38 @@
+/* Home: the VibeGhost session page's chat layout for every agent. Values mirror the session
+   view in vibeghost-view.tsx: the page column, the rounded session card, and the composer's
+   terminal-controls row (home-composer.module.css). */
+.console { position: relative; display: flex; min-width: 0; min-height: 0; height: 100%; flex: 1; flex-direction: column; gap: 4px; overflow: hidden; }
+.thread { position: relative; display: flex; min-width: 0; min-height: 0; flex: 1; overflow: hidden; border-radius: 12px; background: #08090a; padding: 3px; box-shadow: inset 0 1px 0 rgb(244 247 245 / .06), 0 4px 8px rgb(0 0 0 / .25), 0 0 0 1px rgb(0 0 0 / .2); }
+.thread > * { min-width: 0; flex: 1; }
+.thread > section { height: 100%; }
+.empty { display: grid; place-content: center; justify-items: center; gap: 10px; padding: 24px; text-align: center; }
+.empty h1 { margin: 0; color: #d7dbd8; font-family: var(--font-brand), Georgia, serif; font-size: clamp(24px, 3vw, 30px); font-weight: 400; letter-spacing: -.02em; line-height: 1.2; text-wrap: balance; }
+.empty p { margin: 0; color: #919793; font-size: 13px; }
+.emptyLink { color: #b7bcb9; font-size: 12px; text-decoration: underline; text-decoration-color: rgb(255 255 255 / .25); text-underline-offset: 3px; }
+.emptyLink:hover { color: #f4f7f5; }
+
+/* The agent picker leads the input's toolbar row, in the toolbar's raised-control material:
+   an avatar stack of the three agents, the chosen one in its chat-bubble colour on top. */
+.agentTrigger { gap: 7px; padding: 0 10px 0 9px; color: #b7bcb9; }
+.agentTrigger:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 2px; }
+.stack { display: inline-flex; align-items: center; }
+.stack > * + * { margin-left: -5px; }
+.stackDot { position: relative; width: 13px; height: 13px; flex: none; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #5d625f, #3a3d3c 70%); box-shadow: 0 0 0 2px #1f2022, inset 0 -1px 1px rgb(0 0 0 / .35); }
+/* The icon's 18px slot is wider than this 13px circle; pin its centre to the circle's centre
+   (a grid track would grow downward and push it low). 10px dot x 1.3 = 13px. */
+.stackActive { position: relative; width: 13px; height: 13px; flex: none; border-radius: 50%; box-shadow: 0 0 0 2px #1f2022; }
+.stackActive > [data-custom-app-icon] { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.3); }
+/* The chat-bubble circle's long cast shadow would read as a downward offset in the stack; keep a short one. */
+.stackActive [data-custom-app-icon] > span > span { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--app-dot-fill), white 40%), 0 1px 2px rgb(var(--app-dot-shadow) / .55); }
+.chevron { width: 10px; height: 10px; flex: none; opacity: .65; transition: transform 160ms ease; }
+.chevron[data-open] { transform: rotate(180deg); }
+/* The menu: each agent with its own circle; the chosen row is raised with a check, no radio dot. */
+.agentMenu { min-width: 232px; padding: 5px; }
+.agentMenu .agentItem { min-height: 38px; gap: 10px; padding: 0 10px 0 8px; border-radius: 9px; color: #b7bcb9; font-size: 13px; }
+.agentMenu .agentItem > span:first-child { display: none; }
+.agentMenu .agentItem[data-state="checked"] { background: linear-gradient(180deg, #2a2a2d, #232325); box-shadow: inset 0 1px 0 rgb(255 255 255 / .07), 0 1px 2px rgb(0 0 0 / .35); color: #f4f7f5; }
+.agentName { min-width: 0; flex: 1; }
+.agentCheck { width: 14px; height: 14px; flex: none; color: #f4f7f5; opacity: 0; }
+.agentItem[data-state="checked"] .agentCheck { opacity: 1; }
+.agentSoon { flex: none; font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { .chevron { transition: none; } }

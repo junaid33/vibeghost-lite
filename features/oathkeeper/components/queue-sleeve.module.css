@@ -1,0 +1,46 @@
+/* The agent's queue as a sleeve over the session controls. Material, radius
+   and the 12px tuck behind the next card come from the upload/dictation tab
+   and "Session ended" (home-composer .uploadStatus + session-ended .status).
+   The "N queued" collapse row is the one from queued-message-cards (02ae5db). */
+.host { position: relative; z-index: 0; min-width: 0; width: 100%; }
+.host:empty { display: none; }
+/* A standalone composer after the sleeve covers its tucked edge. */
+.host + form { position: relative; z-index: 1; }
+.sleeve.sleeve { display: grid; gap: 2px; padding: 4px 6px 18px; color: #b7bcb9; }
+
+.head { display: flex; min-width: 0; align-items: center; gap: 8px; padding: 2px 6px 0; color: #919793; font-size: 12px; font-weight: 500; line-height: 18px; }
+button.head { width: 100%; border: 0; border-radius: 8px; padding: 4px 6px; background: transparent; font-family: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) { button.head:hover { color: #c4c9c6; } }
+button.head:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.caret { width: 14px; height: 14px; flex: none; color: #919793; transition: transform .16s ease; }
+.caret[data-collapsed] { transform: rotate(-90deg); }
+@media (prefers-reduced-motion: reduce) { .caret { transition: none; } }
+.head::before { content: ""; width: 7px; height: 7px; flex: none; border-radius: 50%; background: #e2b85f; box-shadow: 0 0 0 2px #121314, 0 0 6px rgb(226 184 95 / .45), inset 0 1px 0 rgb(255 255 255 / .25); }
+.head[data-busy]::before { animation: pulse 1.2s ease-in-out infinite; }
+.headLabel { min-width: 0; flex: 1; }
+.error { padding: 0 6px 2px; color: #e89a94; font-size: 12px; line-height: 17px; overflow-wrap: anywhere; }
+
+.list { display: grid; gap: 0; max-height: min(320px, 40dvh); margin: 0; padding: 0; overflow-y: auto; overscroll-behavior: contain; list-style: none; }
+.item { display: flex; min-width: 0; align-items: flex-start; gap: 2px; border-radius: 8px; }
+.item[data-editing] { background: rgb(255 255 255 / .04); }
+.line, .editor { display: flex; min-width: 0; flex: 1; gap: 8px; padding: 6px; }
+.line { align-items: baseline; border: 0; border-radius: 8px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: text; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) { .line:hover:not(:disabled) { background: rgb(255 255 255 / .04); } .line:hover:not(:disabled) .text { color: #fff; } }
+.line:disabled { cursor: default; }
+.item[data-pending] .text { color: #b7bcb9; }
+.line:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.editor { flex-direction: column; gap: 4px; }
+.mode { flex: none; color: #8f9592; font-size: 12px; font-weight: 600; letter-spacing: .04em; line-height: 18px; text-transform: uppercase; }
+.text { min-width: 0; flex: 1; overflow: hidden; color: #e6e9e7; font-size: 13px; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.field { display: block; width: 100%; min-width: 0; max-height: min(240px, 35dvh); margin: 0; padding: 0; border: 0; background: transparent; color: #e6e9e7; font: inherit; font-size: 13px; line-height: 19px; overflow-wrap: anywhere; white-space: pre-wrap; overflow-y: auto; resize: none; outline: none; caret-color: #f4f7f5; }
+@media (pointer: coarse) { .field { font-size: 16px; } }
+
+.action { display: grid; width: 30px; height: 30px; flex: none; place-items: center; border: 0; border-radius: 8px; background: transparent; color: #919793; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.item[data-editing] .action { color: #f4f7f5; }
+@media (hover: hover) { .action:hover:not(:disabled) { color: #f4f7f5; background: rgb(255 255 255 / .05); } }
+.action:disabled { cursor: default; opacity: .4; }
+.action:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.action svg { width: 13px; height: 13px; }
+
+@keyframes pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .head[data-busy]::before { animation: none; } }

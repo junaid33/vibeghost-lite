@@ -1,0 +1,103 @@
+.surface {
+  --dock-surface-radius: 9999px;
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  border-radius: var(--dock-surface-radius);
+  background: rgb(18 19 20 / 0.92);
+  color: #f3f2f1;
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  backdrop-filter: blur(22px) saturate(1.15);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.07),
+    0 0 0 1px rgb(255 255 255 / 0.07),
+    0 50px 20px rgb(0 0 0 / 0.18),
+    0 28px 17px rgb(0 0 0 / 0.24),
+    0 13px 13px rgb(0 0 0 / 0.28),
+    0 3px 7px rgb(0 0 0 / 0.38),
+    inset 0 1px 0 rgb(255 255 255 / 0.075),
+    inset 0 0 0 1px rgb(255 255 255 / 0.018);
+}
+
+.surface::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0.22;
+  background-image:
+    radial-gradient(circle at 18% 32%, rgb(255 255 255 / 0.12) 0 0.45px, transparent 0.6px),
+    radial-gradient(circle at 72% 66%, rgb(255 255 255 / 0.08) 0 0.45px, transparent 0.6px);
+  background-size: 4px 4px, 5px 5px;
+  mix-blend-mode: screen;
+}
+
+.control {
+  position: relative;
+  border: 0;
+  --dock-control-radius: 9999px;
+  border-radius: var(--dock-control-radius);
+  background: #25272a;
+  color: #b4b8bd;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.045),
+    0 0 0 1px rgb(255 255 255 / 0.065),
+    0 10px 4px rgb(0 0 0 / 0.06),
+    0 6px 3px rgb(0 0 0 / 0.10),
+    0 3px 3px rgb(0 0 0 / 0.13),
+    0 1px 1px rgb(0 0 0 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.065),
+    inset 0 -1px 0 rgb(0 0 0 / 0.30);
+}
+
+.control:hover {
+  background: #2c2f32;
+  color: #f3f2f1;
+}
+
+.control:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.control:focus-visible {
+  outline: 2px solid rgb(139 120 255 / 0.75);
+  outline-offset: 2px;
+}
+
+.darkControl {
+  composes: control;
+  color: #fff;
+  background:
+    linear-gradient(to top, transparent, rgb(255 255 255 / 0.15)),
+    #070707;
+  box-shadow:
+    0 0 0 1px #070707,
+    0 9px 4px rgb(0 0 0 / 0.08),
+    0 5px 3px rgb(0 0 0 / 0.16),
+    0 2px 2px rgb(0 0 0 / 0.24),
+    0 1px 1px rgb(0 0 0 / 0.28),
+    inset 0 -1px 0 rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.25);
+}
+
+.darkControl:hover {
+  background:
+    linear-gradient(to top, transparent, rgb(255 255 255 / 0.17)),
+    #121212;
+}
+
+.compactSurface { --dock-surface-radius: 12px; }
+/* The list cards (VibeGhost's menu) lie on the plain page, so their blur has nothing to blur; on a
+   phone six of them covered 71% of the screen with blur layers that are composited again on every
+   scroll frame. Same fill, same look, no layer. The dock itself keeps its blur: content does pass under it. */
+@media (max-width: 1023px) {
+  .compactSurface { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+.compactControl { --dock-control-radius: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .control { transition: none; }
+  .control:active:not(:disabled) { transform: none; }
+}

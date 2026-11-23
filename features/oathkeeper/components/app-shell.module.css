@@ -1,0 +1,61 @@
+/* Flat main canvas with a contrasting charcoal sidebar. */
+.app.app { isolation: isolate; }
+.main { min-height: 0; }
+.main.main { margin: 0; padding: 8px 8px 0; }
+.page { min-width: 0; }
+.page.page {
+  --oathkeeper-canvas: #08090a;
+  padding: 4px;
+  border: 0;
+  border-radius: 0;
+  background: var(--oathkeeper-canvas);
+  box-shadow: none;
+}
+.page [data-workspace-toolbar],
+.page [data-home-toolbar] {
+  height: 42px;
+  margin: 0 0 4px;
+  padding: 3px;
+  border-radius: 12px;
+  background: #1a1d1f;
+  box-shadow: var(--oathkeeper-field-shadow);
+}
+
+:global(:root) {
+  --oathkeeper-bottom-dock-inset: max(8px, env(safe-area-inset-bottom));
+  /* Dock geometry only: never subtract this from the page/scrollport height. */
+  /* The phone dock's pill: 36 px buttons + 8 px padding (bottom-navigation.module.css). */
+  --oathkeeper-bottom-dock-height: 52px;
+  --oathkeeper-bottom-dock-clearance: calc(var(--oathkeeper-bottom-dock-height) + var(--oathkeeper-bottom-dock-inset));
+}
+:global(html[data-oathkeeper-keyboard="true"]) {
+  --oathkeeper-bottom-dock-inset: 8px;
+}
+/* Every page, phone and desktop, extends behind the dock. Only scroll-content tails and
+   individual input controls own clearance; the page must never reserve a strip. */
+.page {
+  --oathkeeper-content-dock-clearance: var(--oathkeeper-bottom-dock-clearance);
+}
+.page :global([data-dock-tail]) {
+  display: block;
+  height: calc(var(--oathkeeper-content-dock-clearance) + 8px);
+  flex-shrink: 0;
+  grid-column: 1 / -1;
+  pointer-events: none;
+}
+@media (max-width: 1023px) {
+  .app.app {
+    position: fixed;
+    inset-inline: 0;
+    top: var(--oathkeeper-viewport-top, 0px);
+    height: var(--oathkeeper-viewport-height, 100dvh);
+  }
+}
+@media (min-width: 1024px) {
+  /* The dock and its chat window centre on the content column, not the viewport. */
+  .main.main { position: relative; padding: 12px 12px 0; }
+}
+
+/* Chat v2 (/chat/v2) fills the window edge to edge; nothing docks over it. */
+.app[data-full-bleed] .main.main { padding: 0; }
+.app[data-full-bleed] .page.page { padding: 0; --oathkeeper-content-dock-clearance: 0px; }

@@ -1,0 +1,71 @@
+/* Lab01 #09's supplied plus button: identical eight-layer shadow and neutral
+   surface, with an owner-requested 8px radius. Explicit controls opt in; cards,
+   navigation rows, status colors and the Ask AI dock are not globally restyled. */
+.oathkeeper-raised-control,
+.crm-records :is(.records-select-button, .records-quiet-button, .records-secondary-button, .records-primary-button) {
+  position: relative;
+  border: 0;
+  border-radius: var(--oathkeeper-control-radius, 8px);
+  background: var(--oathkeeper-control);
+  color: var(--oathkeeper-control-ink, #f8f8fa);
+  box-shadow: var(--oathkeeper-control-shadow);
+  cursor: pointer;
+  /* Preserve each consumer's gesture policy, especially terminal touch-hold. */
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+.oathkeeper-raised-control > svg,
+.crm-records :is(.records-select-button, .records-quiet-button, .records-secondary-button, .records-primary-button) > svg {
+  color: inherit;
+  opacity: 1;
+}
+
+/* Every terminal control uses one muted ink, including settings, attachment,
+   text shortcuts, and their glyphs. */
+[data-terminal-control-toolbar] .oathkeeper-raised-control {
+  --oathkeeper-control-ink: #b7bcb9;
+  color: #b7bcb9;
+}
+[data-terminal-control-toolbar] .oathkeeper-raised-control > svg { color: #b7bcb9; }
+[data-terminal-control-toolbar] .oathkeeper-raised-control button { color: #b7bcb9; }
+.oathkeeper-raised-control:focus-visible,
+.crm-records :is(.records-select-button, .records-quiet-button, .records-secondary-button, .records-primary-button):focus-visible {
+  outline: 2px solid var(--oathkeeper-nav-accent);
+  outline-offset: 2px;
+}
+.oathkeeper-raised-control:active:not(:disabled):not([aria-disabled="true"]) { transform: translateY(1px); }
+.oathkeeper-raised-control:is(:disabled, [aria-disabled="true"]) { cursor: default; opacity: .4; }
+@media (hover: hover) and (pointer: fine) {
+  .oathkeeper-raised-control:hover,
+  .crm-records :is(.records-select-button, .records-quiet-button, .records-secondary-button, .records-primary-button):hover {
+    background: var(--oathkeeper-control);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oathkeeper-raised-control { transition: none; }
+  .oathkeeper-raised-control:active:not(:disabled) { transform: none; }
+}
+
+/* Selected controls use a recessed charcoal fill rather than an extra outline. */
+.oathkeeper-raised-control.oathkeeper-control-selected {
+  background: #292b2d;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / .48), inset 0 1px 0 rgb(255 255 255 / .045);
+}
+.oathkeeper-raised-control.oathkeeper-control-selected:focus-visible { outline: 2px solid var(--oathkeeper-nav-accent); outline-offset: 2px; }
+
+/* Breadcrumb bar: the bar is the recessed track, and every control in it (host
+   settings, app toolbars, custom apps) is the same 36px raised pill. Breadcrumb
+   links and switchers inside the trail keep their own text style. */
+[data-workspace-toolbar][data-workspace-toolbar][data-workspace-toolbar] :is(button, a[href], [role="button"]):not(nav *, nav) {
+  height: 36px;
+  min-height: 36px;
+  min-width: 36px;
+  border: 0;
+  border-radius: var(--oathkeeper-control-radius, 8px);
+  background: var(--oathkeeper-control);
+  box-shadow: var(--oathkeeper-control-shadow);
+}
+[data-workspace-toolbar][data-workspace-toolbar][data-workspace-toolbar] .oathkeeper-control-selected:not(nav *) {
+  background: #292b2d;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / .48), inset 0 1px 0 rgb(255 255 255 / .045);
+}

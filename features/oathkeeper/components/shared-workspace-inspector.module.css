@@ -1,0 +1,132 @@
+/* One quiet workbench; files are rows, not raised cards. */
+.inspector {
+  composes: surface from "./dock-surface.module.css";
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; min-width: 0; min-height: 0; flex-direction: column;
+  overflow: hidden; border-radius: 16px;
+  color: #ececec; font-family: var(--font-body); font-size: 12px;
+  /* Finish measured from the owner's 'Table without horizontal dividers' references (2.4x, CSS px):
+     1px white .08 hairline, 8px panel radius, 6px row radius, faint top highlight, 1px drop shadow,
+     row hover white .051, one filled active row white .1. */
+  --ref-line: rgb(255 255 255 / .08);
+  --ref-panel: rgb(255 255 255 / .035);
+  --ref-strip: #1a1c1d;
+  --ref-shadow: inset 0 1px 0 rgb(255 255 255 / .03), 0 1px 1px rgb(0 0 0 / .25);
+  --ref-hover: rgb(255 255 255 / .051);
+  --ref-active: rgb(255 255 255 / .1);
+}
+.inspector.hidden { display: none; }
+/* Inspector body shares the terminal composer's fine-grain material, not dock speckles. */
+.inspector.inspector::before {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%22160%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cfilter%20id%3D%22noise-bg-fx%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.8%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23noise-bg-fx%29%22%2F%3E%3C%2Fsvg%3E");
+  background-size: 160px 160px;
+  opacity: .10;
+  mix-blend-mode: screen;
+}
+.toolbar { position: relative; z-index: 1; display: flex; min-height: 44px; flex: none; align-items: center; gap: 6px; padding: 6px; border-bottom: 1px solid rgb(255 255 255 / .07); }
+.body { position: relative; z-index: 1; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 8px; }
+/* Same inset track / raised selection as the connect dialog's Manual–QR switch. */
+.tabs { display: inline-flex; min-width: 0; height: 32px; flex: 0 1 auto; gap: 3px; padding: 3px; border-radius: 12px; background: #08090a; }
+.tab { display: inline-flex; height: 26px; min-width: 0; align-items: center; justify-content: center; gap: 5px; border: 0; border-radius: 9px; padding: 0 6px; background: transparent; color: #919793; font-family: var(--font-body); font-size: 11px; font-weight: 500; white-space: nowrap; transition: background-color 120ms ease, color 120ms ease; }
+.tab[data-state="active"] { background: var(--oathkeeper-panel); color: #f4f7f5; box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 4px 8px rgb(0 0 0 / .25); }
+.tab:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.tabPanel { margin: 0; }
+.toolbar > .iconButton { width: 28px; height: 28px; border-radius: 10px; }
+@media (prefers-reduced-motion: reduce) { .tab { transition: none; } }
+.iconButton, .action, .rowAction, .commitButton { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 5px; border: 0; border-radius: var(--oathkeeper-control-radius); background: var(--oathkeeper-control); color: #b7bcb9; box-shadow: var(--oathkeeper-control-shadow); font-size: 11px; font-weight: 500; white-space: nowrap; transition: color 120ms ease, transform 120ms ease; }
+.iconButton { width: 32px; height: 32px; }
+.action, .rowAction { min-height: 32px; padding: 0 8px; }
+.refresh { margin-left: auto; }
+.previewTitle { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.count { display: inline-flex; min-width: 16px; height: 20px; flex: none; align-items: center; justify-content: center; color: #999; font-size: 11px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.source { display: flex; flex-direction: column; gap: 10px; }
+.historyList { border: 1px solid var(--ref-line); border-radius: 8px; padding: 4px; background: var(--ref-panel); box-shadow: var(--ref-shadow); }
+.historyEntry { padding: 10px; border-radius: 6px; overflow-wrap: anywhere; }
+.historyHeader { display: flex; align-items: flex-start; gap: 8px; }
+.historyToggle { min-width: 0; flex: 1; border: 0; background: transparent; color: inherit; padding: 0; text-align: left; }
+.historyToggle strong { display: block; font-size: 12px; font-weight: 500; line-height: 1.35; }
+.historyEntry small { display: block; margin-top: 4px; color: #999; font-size: 10px; }
+.externalCommit { display: grid; place-items: center; width: 26px; height: 26px; flex: none; border-radius: 6px; color: #aab1ad; }
+.externalCommit:hover { background: rgb(255 255 255 / .07); color: #f4f7f5; }
+.commitBody { margin: 8px 0 0 0; border-left: 2px solid rgb(255 255 255 / .12); padding-left: 10px; color: #aeb4b0; font-size: 11px; line-height: 1.45; white-space: pre-wrap; }
+@media (max-width: 360px) { .tab { gap: 3px; padding-inline: 4px; font-size: 10px; } .tab > svg { display: none; } }
+
+.sectionHeading { display: flex; min-height: 32px; align-items: center; gap: 7px; border-bottom: 1px solid rgb(255 255 255 / .07); background: rgb(0 0 0 / .24); padding: 0 14px; color: #a0a4a2; font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.sectionHeading > .count { margin-left: auto; letter-spacing: 0; }
+.summary { padding: 12px 14px; }
+.repoHeading { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 12px; }
+.repoHeading h2 { min-width: 0; flex: 1; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.branch { max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--font-code); color: #a9a9a9; }
+.repoPath { margin: 5px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888; font-size: 10px; }
+.metrics { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 13px; }
+.metric { display: inline-flex; align-items: baseline; gap: 4px; font-size: 10px; color: #999; }
+.metric strong { font-weight: 500; font-variant-numeric: tabular-nums; color: #ddd; }
+.commit { border-bottom: 1px solid rgb(255 255 255 / .08); }
+.commitContent { padding: 12px 14px; }
+.message { width: 100%; min-height: 74px; resize: vertical; border: 0; border-radius: 10px; padding: 9px 10px; background: #141617; color: #f4f7f5; box-shadow: inset 0 0 0 1px var(--ref-line), inset 0 1px 0 rgb(255 255 255 / .06); font-size: 16px; line-height: 1.5; outline: none; }
+.message::placeholder { color: #686e6a; }
+/* While AI drafts a message, a halftone field plays inside the well. */
+.messageField { position: relative; display: flex; }
+.messageDots { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 10px; pointer-events: none; opacity: .55; animation: messageDotsIn 240ms ease-out; }
+.messageField[data-drafting] .message { color: rgb(244 247 245 / .55); }
+@keyframes messageDotsIn { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .messageDots { animation: none; } }
+.message:focus-visible { box-shadow: inset 0 0 0 1px rgb(69 146 237 / .55), inset 0 1px 0 rgb(255 255 255 / .06); }
+.commitActions { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 8px; }
+.commitActions > button { min-height: 26px; height: 26px; padding-block: 0; }
+.aiAction { width: 26px; height: 26px; padding: 0; }
+.syncCount { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding-inline: 4px; border-radius: 5px; background: rgb(255 255 255 / .09); color: #d7dbd8; font-size: 9px; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.syncAction { min-height: 26px; padding-inline: 6px; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.commitButton { min-height: 26px; flex: 1; padding: 0 8px; color: #f4f7f5; font-weight: 600; }
+.changeGroup { display: flex; flex-direction: column; gap: 6px; }
+.groupHeader { position: sticky; top: 0; z-index: 2; display: flex; min-width: 0; min-height: 32px; align-items: center; justify-content: space-between; gap: 6px; border: 1px solid var(--ref-line); border-radius: 8px; background: var(--ref-strip); box-shadow: var(--ref-shadow); color: #a0a4a2; padding: 0 6px 0 12px; }
+/* Section body: the bordered list panel under its strip. */
+.groupBody { border: 1px solid var(--ref-line); border-radius: 8px; background: var(--ref-panel); box-shadow: var(--ref-shadow); }
+.groupRows { padding: 4px; }
+.groupHeader .action { min-height: 22px; padding-inline: 7px; font-size: 10px; }
+.bulkAction { display: inline-flex; flex: none; align-items: center; justify-content: center; min-height: 22px; padding: 0 7px; border: 0; border-radius: 4px; background: transparent; box-shadow: none; font-family: inherit; font-size: 9.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.bulkAction[data-bulk-action="stage"] { color: #78adf5; }
+.bulkAction[data-bulk-action="unstage"] { color: #efa09a; }
+.bulkAction[data-bulk-action="revert"] { color: #a0a4a2; }
+.bulkActions { display: flex; align-items: center; gap: 4px; }
+@media (hover: hover) { .bulkAction:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 3px; } }
+.disclosure { display: flex; flex: 1; min-width: 0; min-height: 32px; align-items: center; gap: 6px; text-align: left; font-size: 10px; color: #a0a4a2; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.disclosure > span:not(.count) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.chevron { width: 14px; height: 14px; flex: none; color: #888; transition: transform 150ms ease; }
+.expanded { transform: rotate(90deg); }
+.changeRow { display: flex; min-width: 0; align-items: center; gap: 12px; border-radius: 6px; padding: 0 10px; }
+.fileChange { display: flex; min-width: 0; min-height: 46px; flex: 1; align-items: center; gap: 12px; padding: 7px 0; text-align: left; }
+.fileIdentity { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 1px; }
+.fileIdentity > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: #ddd; }
+.fileIdentity small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: #888; }
+.status { font-size: 10px; font-weight: 500; flex: none; }
+.rowAction { min-height: 0; padding: 0; border-radius: 4px; background: transparent; color: #919793; box-shadow: none; font-size: 10px; font-weight: 500; }
+.rowAction:hover:not(:disabled) { color: #f4f7f5; text-decoration: underline; text-underline-offset: 3px; }
+.emptyGroup { padding: 14px; color: #888; font-size: 11px; }
+.fileTree { display: flex; flex-direction: column; gap: 6px; }
+.fileTree > .sectionHeading { min-height: 40px; border: 1px solid var(--ref-line); border-radius: 8px; background: var(--ref-strip); box-shadow: var(--ref-shadow); padding: 0 12px; }
+.fileRow { display: flex; min-height: 32px; width: 100%; min-width: 0; align-items: center; gap: 6px; padding-right: 12px; border-radius: 6px; text-align: left; font-size: 12px; color: #cecece; }
+.fileRow[data-active] { background: var(--ref-active); color: #fff; }
+.fileRow[data-directory="true"] { color: #eee; font-weight: 500; }
+.muted { font-size: 10px; color: #888; line-height: 1.5; }
+.warning { font-size: 11px; line-height: 1.5; color: #e9aca3; padding-block: 8px; }
+.empty { display: flex; min-height: 160px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; text-align: center; }
+.inspector button { cursor: pointer; }
+.inspector button:disabled { cursor: default; opacity: .35; }
+.inspector :is(button,textarea):focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+@media (hover: hover) {
+  .iconButton:hover, .action:hover, .rowAction:hover, .commitButton:hover:not(:disabled) { color: #f4f7f5; }
+  .fileRow:not([data-active]):hover, .changeRow:hover, .historyEntry:hover { background: var(--ref-hover); }
+  .tab:hover, .disclosure:hover { color: #f4f7f5; }
+}
+/* Overlay the terminal at every breakpoint. Never change its measured width
+   or trigger a PTY resize/rebuffer when opening the file/source drawer. */
+@media (min-width: 1024px) {
+  .inspector { inset: 0 0 0 auto; width: min(380px, 100%); box-shadow: 0 0 0 1px var(--ref-line), inset 0 1px 0 rgb(255 255 255 / .075), -8px 0 24px rgb(0 0 0 / .24); }
+  .message { font-size: 12px; }
+}
+@media (min-width: 1280px) { .inspector { width: min(420px, 100%); } }
+@media (prefers-reduced-motion: reduce) { .chevron { transition: none; } }
+
+/* The open file sits in its own bordered pane. */
+.previewPanel { height: 100%; min-height: 0; overflow: hidden; border: 1px solid var(--ref-line); border-radius: 8px; background: #111111; box-shadow: var(--ref-shadow); }

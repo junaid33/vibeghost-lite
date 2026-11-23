@@ -1,0 +1,141 @@
+.root { display: flex; flex: 1; flex-direction: column; gap: 8px; min-width: 0; min-height: 0; overflow: hidden; color: #ececec; padding: 0; }
+/* Overlaid in the tab's right padding so hover/selection never shifts tab widths. */
+/* Owner-supplied reference strip, hard-coded. Same 16px radius as the terminal
+   card below; tabs are concentric (16 - 6px inset = 10px). The tab row scrolls
+   under edge fades while the divider and + stay pinned at the right. */
+.strip { flex-shrink: 0; min-width: 0; padding: 6px 0 0; }
+.bar { display: flex; align-items: center; width: 551px; max-width: 100%; height: 48px; padding: 0 12px 0 6px; border-radius: 16px; background: rgb(18 18 21 / .92); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); box-shadow: 0 0 0 1px rgb(0 0 0 / .3), inset 0 1px 0 rgb(255 255 255 / .05), 0 4px 10px rgb(0 0 0 / .3); font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: normal; line-height: 1; user-select: none; }
+.scroller { display: flex; align-items: center; flex: 1; min-width: 0; gap: 6px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+.scroller::-webkit-scrollbar { display: none; }
+/* Inks follow the breadcrumb: #f4f7f5 current, #b7bcb9 hover, #919793 muted. */
+.tab { position: relative; display: flex; align-items: center; flex-shrink: 0; height: 36px; padding: 0 14px 0 10px; border-radius: 10px; white-space: nowrap; color: #919793; transition: color 120ms ease, background-color 120ms ease; }
+.tab[data-selected='true'] { padding-left: 10px; color: #f4f7f5; background: linear-gradient(180deg, #363638 0%, #2f2f31 45%, #262626 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / .09), 0 1px 0 rgb(0 0 0 / .45), 0 1px 3px rgb(0 0 0 / .3); }
+.tabButton { display: flex; align-items: center; min-width: 0; height: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; cursor: pointer; outline: none; }
+/* The whole pill selects; the close button sits above this hit area. */
+.tabButton::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+.label { display: block; max-width: 160px; overflow: hidden; margin-top: -1px; }
+.label[data-fade] { -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent); mask-image: linear-gradient(90deg, #000 70%, transparent); }
+/* Owner-supplied compass: recessed green-black disc with a lit rhombus needle. */
+/* Unselected: a quiet recess (no light rim) that sinks into the bar. Selected:
+   the green-black disc gains the light rim and the needle. */
+.compass { display: grid; place-items: center; flex-shrink: 0; width: 16px; height: 16px; margin-right: 8px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, #151617, #111213 70%); box-shadow: inset 0 1px 2px rgb(0 0 0 / .6), inset 0 0 0 1px rgb(0 0 0 / .3), 0 1px 0 rgb(255 255 255 / .03); transition: background 160ms ease, box-shadow 160ms ease; }
+.compass[data-active='true'] { background: radial-gradient(circle at 50% 60%, var(--compass-disc-hi, #1f3126), var(--compass-disc-lo, #1a2820) 70%); box-shadow: inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .25), 0 0 0 1px rgb(255 255 255 / .06), 0 1px 0 rgb(255 255 255 / .04); }
+.compass svg { width: 16px; height: 16px; opacity: 0; transform: scale(.6) rotate(-20deg); filter: drop-shadow(0 0 1.5px var(--compass-glow, rgb(116 248 104 / .35))); transition: opacity 160ms ease, transform 200ms cubic-bezier(.2, .8, .2, 1); }
+.compass[data-active='true'] svg { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .compass, .compass svg { transition: none; } }
+.close { position: absolute; z-index: 1; top: 50%; right: 8px; translate: 0 -50%; display: grid; place-items: center; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 6px; color: #919793; background: transparent; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 120ms ease, color 120ms ease; }
+.close svg { width: 8px; height: 8px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.close:hover, .close:focus-visible { color: #f4f7f5; }
+.close:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 0; }
+.tab:has(:focus-visible) .close { opacity: 1; pointer-events: auto; }
+.tab:has(.tabButton:focus-visible) { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+@media (hover: hover) and (pointer: fine) {
+  .tab:not([data-selected='true']):hover { color: #b7bcb9; background: linear-gradient(180deg, #252427, #212023); box-shadow: inset 0 1px 0 rgb(255 255 255 / .02); }
+  .tab:hover .close { opacity: 1; pointer-events: auto; }
+  /* Like the reference hover state, the label fades out under the close disc. */
+  .tab:hover .label { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent calc(100% - 8px)); mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent calc(100% - 8px)); }
+  .plus:hover { color: #f4f7f5; background: rgb(255 255 255 / .05); }
+}
+/* Touch has no hover: only the selected tab shows its close disc, with room reserved. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .tab[data-selected='true'] { padding-right: 32px; }
+  .tab[data-selected='true'] .close { opacity: 1; pointer-events: auto; }
+}
+.divider { flex-shrink: 0; width: 1px; height: 22px; margin-left: 6px; background: rgb(255 255 255 / .08); }
+.plus { display: grid; place-items: center; flex-shrink: 0; width: 30px; height: 30px; margin-left: 7px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #919793; cursor: pointer; transition: color 120ms ease, background-color 120ms ease; }
+.plus svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.plus:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+/* 'card' layout: the tab row is the top of the terminal card's graphite rim.
+   The bar and the card share one track colour and one dark outline (the lip
+   runs along the bar's top edge), with no seam between them; the screen stays a separately rounded recess below. */
+.root[data-tabs-layout='card'][data-has-strip] { gap: 0; }
+.root[data-tabs-layout='card'] .strip { padding-top: 6px; }
+.root[data-tabs-layout='card'] .bar { width: 100%; max-width: none; height: 46px; padding: 0 10px 0 5px; border-radius: 16px 16px 0 0; background: #171619; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 -1px 0 rgb(0 0 0 / .55), 1px 0 0 rgb(0 0 0 / .55), -1px 0 0 rgb(0 0 0 / .55), inset 0 1px 0 rgb(255 255 255 / .08); }
+.root[data-tabs-layout='card'][data-has-strip] [data-tabs-terminal-card] { padding-top: 0; border-radius: 0 0 16px 16px; background: linear-gradient(180deg, #171619, #141416); box-shadow: 1px 0 0 rgb(0 0 0 / .55), -1px 0 0 rgb(0 0 0 / .55), 0 1px 0 rgb(0 0 0 / .55), 0 2px 6px rgb(0 0 0 / .35); }
+.root[data-tabs-layout='card'][data-has-strip] [data-tabs-placeholder] { border-top-width: 0; border-radius: 0 0 16px 16px; box-shadow: 1px 0 0 rgb(0 0 0 / .55), -1px 0 0 rgb(0 0 0 / .55), 0 1px 0 rgb(0 0 0 / .55), 0 2px 6px rgb(0 0 0 / .35), inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .3); }
+/* Split in the card layout: the two panes meet at the divider so their cards
+   fuse into one track with two screens (a 10px seam carries the resize grip);
+   only the controls below keep a gap. The focused screen gets a faint green
+   ring that echoes the compass on its tab. */
+.root[data-tabs-layout='card'] .stage[data-split-view='true'] .pane[data-pane-side] { padding: 0; }
+.root[data-tabs-layout='card'] .stage[data-split-view='true'] .pane[data-pane-side='primary'] [data-terminal-controls] { padding-right: 5px; }
+.root[data-tabs-layout='card'] .stage[data-split-view='true'] .pane[data-pane-side='secondary'] [data-terminal-controls] { padding-left: 5px; }
+.root[data-tabs-layout='card'][data-has-strip] .stage[data-split-view='true'] .pane[data-pane-side='primary'] [data-tabs-terminal-card] { border-bottom-right-radius: 0; box-shadow: -1px 0 0 rgb(0 0 0 / .55), 0 1px 0 rgb(0 0 0 / .55), 0 2px 6px rgb(0 0 0 / .35); }
+.root[data-tabs-layout='card'][data-has-strip] .stage[data-split-view='true'] .pane[data-pane-side='secondary'] [data-tabs-terminal-card] { border-bottom-left-radius: 0; box-shadow: 1px 0 0 rgb(0 0 0 / .55), 0 1px 0 rgb(0 0 0 / .55), 0 2px 6px rgb(0 0 0 / .35); }
+.stage[data-split-view='true'] .pane[data-pane-focused='true'] [data-tabs-terminal-card] > div:first-child { box-shadow: inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .3), 0 0 0 1px rgb(116 248 104 / .22); }
+/* Split pair: one raised pill (the selected-tab material) holding both panes'
+   tabs, left and right, with a divider. Halves are flat inside it; the focused
+   half carries the compass and bright ink, the other half the muted ink. */
+.group { display: flex; align-items: center; flex-shrink: 0; height: 36px; border-radius: 10px; background: linear-gradient(180deg, #363638 0%, #2f2f31 45%, #262626 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / .09), 0 1px 0 rgb(0 0 0 / .45), 0 1px 3px rgb(0 0 0 / .3); }
+.group .tab, .group .tab[data-selected='true'] { background: none; box-shadow: none; }
+.group .tab[data-selected='true'] { color: #f4f7f5; }
+.group .tab:not([data-selected='true']) { color: #919793; padding-left: 15px; }
+.group { padding-left: 10px; }
+.group .tab[data-half='left'] { padding-left: 8px; }
+.groupMark { display: flex; flex-shrink: 0; }
+.groupMark > span { margin-right: 0; }
+/* The divider is the seam of the pair: clicking it separates the two tabs. */
+.groupDivider { position: relative; flex-shrink: 0; width: 9px; height: 24px; margin: 0 -4px; padding: 0; border: 0; background: none; cursor: col-resize; z-index: 2; }
+.groupDivider::before, .groupDivider::after { content: ''; position: absolute; top: 3px; bottom: 3px; left: 4px; width: 1px; background: rgb(255 255 255 / .1); box-shadow: 1px 0 0 rgb(0 0 0 / .35); transition: translate 140ms ease, background-color 140ms ease; }
+.groupDivider:focus-visible { outline: 2px solid #8bb8ff; outline-offset: 0; border-radius: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .groupDivider:hover::before { translate: -2px 0; background: rgb(255 255 255 / .28); }
+  .groupDivider:hover::after { translate: 2px 0; background: rgb(255 255 255 / .28); }
+}
+.plus[data-active] { color: #f4f7f5; background: #232325; box-shadow: inset 0 1px 2px rgb(0 0 0 / .5), inset 0 1px 0 rgb(255 255 255 / .04); }
+@media (hover: hover) and (pointer: fine) {
+  .root[data-tabs-layout='card'] .tab:not([data-selected='true']):hover { background: rgb(255 255 255 / .04); }
+  .group .tab:not([data-selected='true']):hover { color: #b7bcb9; background: rgb(255 255 255 / .03); }
+}
+/* Track material from the owner's "Discover" reference: near-black #171619 -> #141416
+   inside a 1px dark outline, with a light lip on the top edge only, around a
+   separately rounded, recessed screen (composer field inset shadow). Only tab
+   panes opt in; ordinary terminal pages keep their existing styling. */
+.root [data-tabs-terminal-card] { padding: 5px; border-radius: 16px; background: linear-gradient(180deg, #171619, #141416); box-shadow: 0 0 0 1px rgb(0 0 0 / .55), inset 0 1px 0 rgb(255 255 255 / .08), 0 2px 6px rgb(0 0 0 / .35); }
+.root [data-tabs-terminal-card] > div:first-child { padding: 5px; background: #08090a; border-radius: 12px; overflow: hidden; box-shadow: inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .3), 0 1px 0 rgb(255 255 255 / .035); }
+.root [data-tabs-terminal-card] > div[aria-hidden='false']:not(:first-child) { inset: 5px; border-radius: 12px; }
+.root[data-tabs-layout='card'][data-has-strip] [data-tabs-terminal-card] > div[aria-hidden='false']:not(:first-child) { top: 0; }
+/* Only an opened tab's unavailable state gets a card. The zero-tab empty
+   state belongs directly on the page background, without a rim or surface. */
+.root[data-has-strip] [data-tabs-placeholder] { border: 5px solid transparent; border-radius: 16px; background: linear-gradient(#0e0f10, #0e0f10) padding-box, linear-gradient(180deg, #171619, #141416) border-box; box-shadow: 0 0 0 1px rgb(0 0 0 / .55), 0 2px 6px rgb(0 0 0 / .35), inset 0 1px 2px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(0 0 0 / .3); }
+.stage[data-split-view='true'] .pane[data-pane-side='primary'] { padding-right: 5px; }
+.stage[data-split-view='true'] .pane[data-pane-side='secondary'] { padding-left: 5px; }
+.stage { position: relative; min-height: 0; min-width: 0; flex: 1; overflow: clip; }
+.pane { position: absolute; inset: 0; display: flex; min-width: 0; min-height: 0; padding: 0; }
+.pane[data-pane-side='hidden'] { opacity: 0; visibility: hidden; pointer-events: none; }
+.pane[data-pane-side='primary'], .pane[data-pane-side='secondary'] { z-index: 1; }
+.resize { position: absolute; top: 8px; bottom: 8px; width: 12px; transform: translateX(-50%); z-index: 3; cursor: col-resize; touch-action: none; display: grid; place-items: center; border-radius: 4px; }
+.resize span { height: 30px; width: 3px; border-radius: 3px; background: #3a3a3d; }
+.resize:hover span, .resize:focus-visible span { background: #919793; }
+.empty { min-width: 0; min-height: 0; height: 100%; display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; overflow-y: auto; text-align: center; }
+.root:not([data-has-strip]) .empty { padding-bottom: calc(24px + var(--oathkeeper-content-dock-clearance, 0px)); }
+.empty > svg { width: 36px; height: 36px; color: #93949d; }
+.empty h1 { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -.035em; }
+.empty p { max-width: 350px; color: #a6a7af; font-size: 13px; line-height: 1.6; }
+.empty button { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 8px 14px; font-size: 12px; }
+.empty button svg { width: 16px; height: 16px; }
+.empty small { color: #9899a1; font-size: 12px; }
+.notice { flex-shrink: 0; padding: 10px 12px; font-size: 12px; line-height: 1.5; color: #bcbfc6; }
+.notice button { text-decoration: underline; }
+.notice button:focus-visible, .empty button:focus-visible, .resize:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; border-radius: 8px; }
+@media (max-width: 639px) {
+  .empty { padding: 20px; }
+}
+
+/* Tab switch (click, keys or swipe): the current card shrinks back and fades
+   while the new one slides over it from the side of the tab being opened.
+   340ms matches TAB_SWITCH_MS in vibeghost-tabs.tsx. */
+.pane[data-motion^='exit'] { visibility: visible; opacity: 1; z-index: 0; pointer-events: none; transform-origin: 50% 40%; }
+.pane[data-motion^='enter'] { z-index: 2; }
+.pane[data-motion='exit-next'] { animation: tab-exit-next 340ms cubic-bezier(.2, .8, .2, 1) both; }
+.pane[data-motion='exit-prev'] { animation: tab-exit-prev 340ms cubic-bezier(.2, .8, .2, 1) both; }
+.pane[data-motion='enter-next'] { animation: tab-enter-next 340ms cubic-bezier(.2, .8, .2, 1) both; }
+.pane[data-motion='enter-prev'] { animation: tab-enter-prev 340ms cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes tab-exit-next { to { transform: translateX(-6%) scale(.9); opacity: .25; filter: brightness(.7); } }
+@keyframes tab-exit-prev { to { transform: translateX(6%) scale(.9); opacity: .25; filter: brightness(.7); } }
+@keyframes tab-enter-next { from { transform: translateX(100%); } }
+@keyframes tab-enter-prev { from { transform: translateX(-100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .pane[data-motion] { animation: none; }
+  .pane[data-motion^='exit'] { visibility: hidden; opacity: 0; }
+}

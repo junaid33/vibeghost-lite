@@ -1,0 +1,100 @@
+.dock { composes: surface from "./dock-surface.module.css"; }
+/* The nav itself is the pill. No full-width footer/safe-area layer exists. */
+.dock.dock {
+  position: fixed;
+  z-index: 30;
+  inset-inline-start: 50%;
+  bottom: calc(var(--oathkeeper-viewport-bottom, 0px) + var(--oathkeeper-bottom-dock-inset));
+  transform: translateX(-50%);
+  display: flex;
+  /* Six 36 px phone targets: 6 x 36 + 5 x 6 gap + 2 x 8 padding. */
+  width: 262px;
+  height: var(--oathkeeper-bottom-dock-height, 52px);
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  overflow: hidden;
+  background: rgb(18 19 20 / .76);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  backdrop-filter: blur(22px) saturate(1.15);
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+}
+
+.iconButton,
+.searchButton {
+  composes: control from "./dock-surface.module.css";
+  z-index: 1;
+  flex: none;
+  height: 36px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 120ms cubic-bezier(.23, 1, .32, 1),
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.iconButton,
+.searchButton {
+  display: flex;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton svg,
+.searchButton svg { width: 18px; height: 18px; flex: none; }
+/* Selection is carried by the surface/ring; primary glyphs stay gray. */
+.iconButton,
+.iconButton:hover,
+.iconButton:focus-visible { color: #999999; }
+.searchButton { composes: darkControl from "./dock-surface.module.css"; }
+
+/* The chat button's agent dot: the agent picker's dot (CustomAppIcon, 10px with its own coloured
+   glow), drawn at 12px (1.2x) so it matches the neighbouring dock glyphs optically; the 18px slot and hit area are unchanged. */
+.agentDot { display: grid; width: 18px; height: 18px; flex: none; place-items: center; }
+.agentDot [data-custom-app-icon] { transform: scale(1.2); }
+/* The agent is working (ChatDockButton): DockOrbit plays the session dropdown's orbit (session-orbit-frames.ts,
+   timing in session-status-dot.tsx) on its 6px slot, scaled 2x so a dot is 12px (the icon is 10px, shrunk to 6px first). */
+.orbit { position: relative; display: block; width: 6px; height: 6px; transform: scale(2); }
+.orbitDot { position: absolute; top: 0; left: 0; display: grid; width: 6px; height: 6px; place-items: center; }
+/* The icon's own slot is 18px, three times this 6px cell: pin its centre to the cell's centre, or the grid track grows and it sits 6px down and right. */
+.agentDot .orbitDot [data-custom-app-icon] { position: absolute; top: 50%; left: 50%; margin: -9px 0 0 -9px; transform: scale(.6); }
+
+/* Hold to dictate (ChatDockButton): red rises through the button while it is held; when it is
+   fully red, dictation starts and the dot turns red with it. The hold never selects text, opens the iOS callout
+   or scrolls the page; a tap is still a tap. */
+.dock.dock { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.holdButton { touch-action: none; }
+.holdButton .agentDot { position: relative; z-index: 1; }
+/* Only the dot turns red: a red dot fades in over the agent's dot while the button is held. */
+.holdDot { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; opacity: 0; pointer-events: none; }
+/* 180ms (a tap's length) + 580ms = the 760ms hold. */
+.holdButton[data-hold="holding"] .holdDot { animation: hold-dot 580ms linear 180ms forwards; }
+.holdButton[data-hold="armed"] .holdDot { opacity: 1; }
+@keyframes hold-dot { to { opacity: 1; } }
+
+/* No selected state: every button keeps the resting shell (aria-current/aria-expanded stay for assistive tech). */
+
+.iconButton:focus-visible,
+.searchButton:focus-visible { outline-offset: 3px; }
+
+/* Desktop: the same dock, centred on the main content column (it is main's last child), not on the
+   viewport, so it never sits under the sidebar. Home is dropped: the sidebar's first row is Home. */
+@media (min-width: 1024px) {
+  .dock.dock {
+    position: absolute;
+    bottom: var(--oathkeeper-bottom-dock-inset);
+    width: auto;
+  }
+  .desktopHidden { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconButton,
+  .searchButton { transition: none; }
+  /* No fade: the dot turns red at once when letting go will start dictation. */
+  .holdButton[data-hold="holding"] .holdDot { animation: none; }
+}

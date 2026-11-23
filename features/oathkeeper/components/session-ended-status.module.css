@@ -1,0 +1,40 @@
+/* Reuse the upload/dictation material, but reserve space in normal flow.
+   The last 12px sit behind the toolbar rim, never over the recording. */
+.status.status {
+  position: relative;
+  inset: auto;
+  z-index: 0;
+  flex-shrink: 0;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 6px 12px 18px; /* 6px below the row + 12px hidden behind the rim */
+  margin-bottom: -18px; /* 12px overlap + the controls' 6px gap */
+  pointer-events: auto;
+}
+.row { display: flex; min-width: 0; align-items: center; gap: 8px; }
+.copy { min-width: 0; flex: 1; }
+.label { color: #b7bcb9; font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: .1em; line-height: 20px; text-transform: uppercase; }
+.actions { display: flex; flex: none; max-width: 100%; flex-wrap: wrap; align-items: center; gap: 2px; }
+.action {
+  display: inline-flex;
+  height: 20px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #b7bcb9;
+  font-size: 10px;
+  line-height: 16px;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.action:disabled { opacity: .5; cursor: default; }
+.action:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -1px; }
+@media (hover: hover) { .action:hover:not(:disabled) { color: #f4f7f5; text-decoration: underline; } }

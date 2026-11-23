@@ -1,0 +1,105 @@
+/* The one Lightbox: a dark full-screen stage with the picture fitted to it. It is dark in both themes
+   (pictures are judged on black). Controls are raised pills in a recessed track; 44px targets on touch. */
+.overlay { position: fixed; inset: 0; z-index: 470; background: rgb(5 6 7 / .96); animation: fade 140ms ease both; }
+.root {
+  /* The app's own raised and recessed materials (tokens.css), so the lightbox matches the page under it. */
+  --lb-raised: var(--oathkeeper-raised);
+  --lb-raised-hover: var(--oathkeeper-raised-hover);
+  --lb-raised-shadow: var(--oathkeeper-raised-shadow);
+  --lb-recess: var(--oathkeeper-recess);
+  --lb-hit: 32px;
+  position: fixed; inset: 0; z-index: 471; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  color: var(--oathkeeper-text); font-family: var(--font-body), system-ui, sans-serif; outline: none; animation: fade 140ms ease both;
+  -webkit-user-select: none; user-select: none;
+}
+@keyframes fade { from { opacity: 0; } }
+
+.bar { display: flex; align-items: center; gap: 12px; min-width: 0; min-height: 56px; padding: 10px 12px 10px 16px; }
+.copy { display: grid; flex: 1; min-width: 0; gap: 1px; }
+.title { margin: 0; overflow: hidden; color: var(--oathkeeper-text); font-size: 13px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.caption { margin: 0; overflow: hidden; color: var(--oathkeeper-dim); font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
+
+.track { display: inline-flex; flex: none; align-items: center; gap: 3px; padding: 3px; border-radius: 12px; background: var(--oathkeeper-track); box-shadow: var(--lb-recess); }
+.pill { display: inline-grid; place-items: center; flex: none; width: var(--lb-hit); height: var(--lb-hit); padding: 0; border: 0; border-radius: 9px; background: var(--lb-raised); box-shadow: var(--lb-raised-shadow); color: #e6e9e7; text-decoration: none; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform 120ms ease; }
+.pill svg { width: 16px; height: 16px; color: var(--oathkeeper-ink-2); }
+.pill:active { transform: scale(.96); }
+.pill[aria-pressed="true"] { background: var(--oathkeeper-text); }
+.pill[aria-pressed="true"] svg { color: var(--oathkeeper-track); }
+.pill:focus-visible, .side:focus-visible { outline: 2px solid var(--oathkeeper-focus); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { .pill:hover { background: var(--lb-raised-hover); color: #fff; } .pill[aria-pressed="true"]:hover { background: #fff; } }
+.counter { min-width: 64px; padding: 0 8px; color: var(--oathkeeper-ink-2); font-size: 12px; font-weight: 500; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* The stage never changes size, so stepping moves nothing but the picture. */
+.stage { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; overflow: hidden; padding: 4px 16px; touch-action: none; cursor: zoom-out; }
+.stage[data-zoomed] { cursor: grab; }
+.stage[data-moving] { cursor: grabbing; }
+.frame { position: relative; display: grid; place-items: center; width: 100%; height: 100%; min-width: 0; min-height: 0; pointer-events: none; }
+.picture { position: absolute; inset: 0; margin: auto; display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 6px; background: #111213; pointer-events: auto; cursor: zoom-in; will-change: transform; transition: transform 200ms cubic-bezier(.2, .8, .2, 1), opacity 160ms ease; -webkit-user-drag: none; -webkit-touch-callout: default; }
+.stage[data-zoomed] .picture { cursor: inherit; }
+.stage[data-moving] .picture { transition: none; }
+.under { width: 100%; height: 100%; object-fit: contain; background: none; pointer-events: none; cursor: default; filter: blur(8px); opacity: .7; transition: none; }
+.failed { display: grid; justify-items: center; gap: 10px; color: var(--oathkeeper-dim); font-size: 13px; pointer-events: auto; cursor: default; }
+.failed button { min-height: var(--lb-hit); padding: 0 12px; border: 0; border-radius: 9px; background: var(--lb-raised); box-shadow: var(--lb-raised-shadow); color: #e6e9e7; font: 500 12px/16px var(--font-body), sans-serif; cursor: pointer; }
+
+/* Desktop: arrows at the sides as well, where the pointer already is. */
+.side { position: absolute; top: 50%; z-index: 1; display: none; place-items: center; width: 44px; height: 44px; margin-top: -22px; padding: 0; border: 0; border-radius: 999px; background: var(--lb-raised); box-shadow: var(--lb-raised-shadow), 0 6px 18px rgb(0 0 0 / .45); color: #e6e9e7; cursor: pointer; opacity: .9; transition: opacity 120ms ease, transform 120ms ease; }
+.side svg { width: 18px; height: 18px; }
+.side[data-side="previous"] { left: 16px; }
+.side[data-side="next"] { right: 16px; }
+.side:active { transform: scale(.96); }
+@media (hover: hover) and (pointer: fine) and (min-width: 720px) { .side { display: grid; } .side:hover { opacity: 1; background: var(--lb-raised-hover); } .stage { padding-inline: 76px; } }
+
+.textPill { display: inline-flex; flex: none; align-items: center; gap: 6px; min-height: calc(var(--lb-hit) + 6px); padding: 0 14px; border: 0; border-radius: 12px; background: var(--lb-raised); box-shadow: var(--lb-raised-shadow); color: #e6e9e7; font: 500 12.5px/16px var(--font-body), sans-serif; text-decoration: none; white-space: nowrap; cursor: pointer; touch-action: manipulation; }
+.textPill svg { width: 15px; height: 15px; }
+.textPill[data-primary] { background: var(--oathkeeper-text); color: var(--oathkeeper-track); font-weight: 600; }
+.textPill[data-primary] svg { color: var(--oathkeeper-track); }
+.textPill[data-active] { background: #1d3a2a; color: #a6e3bf; box-shadow: inset 0 0 0 1px rgb(122 189 149 / .45); }
+.textPill[data-active] svg { color: #a6e3bf; }
+.textPill:disabled { opacity: .6; cursor: progress; }
+.textPill:focus-visible { outline: 2px solid var(--oathkeeper-focus); outline-offset: 2px; }
+/* Narrow screens: the name gets its own row (two lines at most), since it is the only thing that says which picture this is; the controls sit under it. */
+@media (max-width: 560px) {
+  .bar { flex-wrap: wrap; row-gap: 8px; padding: 10px 12px; }
+  .bar .copy { flex: 1 0 100%; }
+  .bar .title { display: -webkit-box; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 14px; line-height: 19px; }
+  .bar .textPill { padding: 0 10px; }
+  .bar .track { margin-left: auto; }
+}
+.foot { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; min-height: 60px; padding: 10px 12px 14px; }
+.foot[data-single] { min-height: 16px; padding: 0; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (pointer: coarse) { .root { --lb-hit: 44px; } .pill { border-radius: 11px; } .track { border-radius: 14px; } .pill svg { width: 18px; height: 18px; } .counter { min-width: 72px; font-size: 13px; } }
+@media (prefers-reduced-motion: reduce) { .overlay, .root { animation: none; } .picture, .pill, .side { transition: none; } }
+
+/* ── Triggers on the pages ───────────────────────────────────────── */
+/* A picture that is a button: no chrome of its own, the picture is the control. */
+.trigger { position: relative; display: block; min-width: 0; padding: 0; border: 0; border-radius: inherit; background: none; color: inherit; font: inherit; text-align: inherit; cursor: zoom-in; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.trigger:focus-visible { outline: 2px solid var(--oathkeeper-focus); outline-offset: 2px; }
+/* "View full screen" on a card whose whole face is a link: a raised pill in the picture's corner. */
+.expand { position: absolute; top: 8px; right: 8px; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 9px; background: linear-gradient(180deg, rgb(35 34 37 / .92), rgb(28 28 30 / .92)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 1px 0 rgb(0 0 0 / .5), 0 2px 8px rgb(0 0 0 / .4); color: #e6e9e7; cursor: zoom-in; opacity: 0; transition: opacity 120ms ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent; backdrop-filter: blur(6px); }
+.expand svg { width: 15px; height: 15px; }
+.expand:focus-visible { opacity: 1; outline: 2px solid var(--oathkeeper-focus); outline-offset: 2px; }
+.expandHost { position: relative; }
+@media (hover: hover) and (pointer: fine) { .expandHost:hover .expand, .expandHost:focus-within .expand { opacity: 1; } .expand:hover { color: #fff; } }
+/* Touch has no hover: the pill is always there, with a 44px target around it. */
+@media (pointer: coarse), (hover: none) { .expand { opacity: 1; width: 34px; height: 34px; } .expand::after { content: ""; position: absolute; inset: -5px; } }
+/* Pictures inside a LightboxZone. */
+.zone img[data-lightbox], .zone [data-lightbox-open] { cursor: zoom-in; }
+.zone img[data-lightbox]:focus-visible { outline: 2px solid var(--oathkeeper-focus); outline-offset: 2px; }
+
+/* Curator-style cards keep their menu in the top right corner, so the pill takes the left. */
+.expandCard > .expand { top: 11px; left: 11px; right: auto; }
+.said { flex: 1 0 100%; margin: 0; color: #a6e3bf; font: 500 12.5px/17px var(--font-body), sans-serif; text-align: center; }
+.said[data-tone="bad"] { color: #ff9c9c; }
+
+/* One more line under the caption: what the design is. */
+.note { margin: 2px 0 0; overflow: hidden; color: var(--oathkeeper-ink-3); font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 560px) { .bar .note { display: -webkit-box; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; } }
+/* A tap on the picture gives it the whole screen; another tap (or any key) brings the bars back. */
+.root[data-chrome="off"] { grid-template-rows: minmax(0, 1fr); }
+.root[data-chrome="off"] > :is(.bar, .foot) { display: none; }
+.root[data-chrome="off"] .side { opacity: 0; pointer-events: none; }
+/* Said once when a shared ?image= link names a picture this page doesn't have. */
+.missed { position: fixed; z-index: 471; left: 50%; bottom: calc(24px + var(--oathkeeper-content-dock-clearance, 0px) + env(safe-area-inset-bottom)); max-width: calc(100vw - 32px); margin: 0; padding: 9px 14px; border-radius: 11px; background: #111213; box-shadow: 0 0 0 1px rgb(0 0 0 / .6), inset 0 1px 0 rgb(255 255 255 / .07), 0 16px 32px rgb(0 0 0 / .5); color: var(--oathkeeper-ink-2); font: 500 12.5px/17px var(--font-body), system-ui, sans-serif; transform: translateX(-50%); pointer-events: none; }

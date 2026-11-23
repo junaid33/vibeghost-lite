@@ -1,0 +1,5 @@
+.overlay [data-terminal-text-layer] ::selection {
+  /* Ghostty supplies the glyphs; the browser supplies the highlight and handles. */
+  color: transparent;
+  background: rgb(96 165 250 / .35);
+}

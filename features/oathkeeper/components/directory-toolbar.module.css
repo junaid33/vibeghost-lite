@@ -1,0 +1,15 @@
+/* Active Feed and Workspaces search bar: the CRM table toolbar itself
+   (.crm-records .records-toolbar in globals.css) with its list controls.
+   .records supplies the tokens .crm-records.records-shell normally provides,
+   without the shell's own frame. */
+.records { --records-panel-radius: 10px; --records-control-radius: 8px; --surface: #17191b; --hover: #202326; --line: rgb(244 247 245 / .06); --line-strong: rgb(244 247 245 / .09); --ink: #f4f7f5; --ink-2: #b6bdb9; --ink-3: #777e79; flex-shrink: 0; font-family: var(--font-body), sans-serif; }
+/* One row at every width (the table toolbar stacks on phones because it has a title). */
+.toolbar.toolbar { flex-direction: row; align-items: center; justify-content: flex-start; gap: 4px; }
+.clear { display: grid; width: 22px; height: 22px; flex: none; place-items: center; border: 0; border-radius: 6px; background: transparent; color: #777e79; cursor: pointer; }
+.clear:hover { color: #f3f2f1; }
+/* Filter shows its current label from 640px; a 32px icon below. */
+.filter.filter { gap: 7px; padding: 0 10px; }
+.filterLabel { display: none; max-width: 10rem; overflow: hidden; text-overflow: ellipsis; }
+@media (min-width: 640px) { .filterLabel { display: inline; } }
+/* The table's input hides its own outline; keep a visible focus ring on the field. */
+.records [data-workspace-search]:focus-within { outline: 2px solid rgb(139 184 255 / .5); outline-offset: 1px; }

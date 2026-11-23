@@ -1,0 +1,23 @@
+/* A recessed header bar with a title and quiet buttons: the Calendar month header's treatment
+   (features/oathkeeper/components/calendar-view.module.css .toolbar, .monthButton, .ghost,
+   .ghostIcon), lifted here so other headers can share it. The well itself is the shared
+   workspace-card band; the values below are the calendar's, unchanged. */
+.bar {
+  composes: band from "../../features/oathkeeper/components/workspace-card.module.css";
+  display: flex;
+  min-width: 0;
+  height: 42px;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  padding: 0 5px 0 4px;
+}
+/* The calendar's month title: 14px semibold, 8px in from the well's edge. */
+.title { min-width: 0; flex: 1; overflow: hidden; padding: 0 8px; color: #f4f7f5; font-size: 14px; font-weight: 600; letter-spacing: -.01em; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; }
+/* Today / ‹ ›: 32px, grey until hovered or focused. */
+.button { display: inline-flex; height: 32px; flex: none; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #919793; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 120ms ease, color 120ms ease; }
+.button:hover, .button[aria-expanded="true"] { background: rgb(255 255 255 / .05); color: #f4f7f5; }
+.button:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.icon { width: 32px; }
+.icon svg { width: 16px; height: 16px; }
+@media (prefers-reduced-motion: reduce) { .button { transition: none; } }

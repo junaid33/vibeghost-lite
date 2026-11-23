@@ -1,0 +1,6 @@
+/* Small compatibility styles for locally bundled SVGs. */
+.monochrome > g > * { opacity: 1 !important; }
+.flipX { transform: scaleX(-1); }
+.plain { flex-shrink: 0; }
+.disk { transform-origin: center; transform-box: view-box; }
+@media (prefers-reduced-motion: reduce) { .disk { animation: none; } }

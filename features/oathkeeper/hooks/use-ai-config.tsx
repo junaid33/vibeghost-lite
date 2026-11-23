@@ -1,0 +1,291 @@
+"use client"
+
+import * as React from "react"
+import type { AiModelKind } from '@/lib/ai-model-kind';
+
+type KeyMode = "env" | "local"
+type ChatMode = "sidebar" | "chatbox"
+
+interface LocalKeys {
+  provider: string // "openrouter" | "custom"
+  apiKey: string
+  model: string
+  modelKind?: AiModelKind
+  maxTokens: string
+  customEndpoint?: string // For when provider is "custom" or a custom URL
+}
+
+interface AiConfig {
+  enabled: boolean
+  onboarded: boolean
+  keyMode: KeyMode
+  chatMode: ChatMode
+  localKeys?: LocalKeys
+}
+
+interface SharedKeys {
+  apiKey: string
+  modelKind?: AiModelKind
+  model: string
+  maxTokens: number
+}
+
+interface AiConfigProviderProps {
+  children: React.ReactNode
+  defaultConfig?: Partial<AiConfig>
+  storageKey?: string
+  sharedKeys?: SharedKeys | null
+  localAiEnabled?: boolean
+}
+
+interface AiConfigProviderState {
+  config: AiConfig
+  setConfig: (config: Partial<AiConfig> | ((prev: AiConfig) => Partial<AiConfig>)) => void
+  isHydrated: boolean
+  sharedKeys?: SharedKeys | null
+  localAiEnabled: boolean
+}
+
+const isServer = typeof window === "undefined"
+const AiConfigContext = React.createContext<AiConfigProviderState | undefined>(
+  undefined
+)
+
+const defaultAiConfig: AiConfig = {
+  enabled: false,
+  onboarded: false,
+  keyMode: "local",
+  chatMode: "chatbox",
+  localKeys: undefined,
+}
+
+const enforceLocalAiPolicy = (config: AiConfig, localAiEnabled: boolean): AiConfig =>
+  localAiEnabled ? config : { ...config, keyMode: "env", localKeys: undefined }
+
+const saveToLS = (storageKey: string, config: AiConfig) => {
+  try {
+    localStorage.setItem("aiChatEnabled", config.enabled.toString())
+    localStorage.setItem("aiChatOnboarded", config.onboarded.toString())
+    localStorage.setItem("aiKeyMode", config.keyMode)
+    localStorage.setItem("aiChatMode", config.chatMode)
+
+    if (config.localKeys) {
+      localStorage.setItem("aiProvider", config.localKeys.provider)
+      localStorage.setItem("openRouterApiKey", config.localKeys.apiKey)
+      localStorage.setItem("openRouterModel", config.localKeys.model)
+      localStorage.setItem("openRouterMaxTokens", config.localKeys.maxTokens)
+      if (config.localKeys.customEndpoint) {
+        localStorage.setItem("aiCustomEndpoint", config.localKeys.customEndpoint)
+      } else {
+        localStorage.removeItem("aiCustomEndpoint")
+      }
+    } else {
+      localStorage.removeItem("aiProvider")
+      localStorage.removeItem("openRouterApiKey")
+      localStorage.removeItem("openRouterModel")
+      localStorage.removeItem("openRouterMaxTokens")
+      localStorage.removeItem("aiCustomEndpoint")
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(config))
+  } catch {
+  }
+}
+
+const loadFromLS = (storageKey: string, defaultConfig: AiConfig, localAiEnabled = true): AiConfig => {
+  if (isServer) return defaultConfig
+
+  try {
+    const savedConfig = localStorage.getItem(storageKey)
+    if (savedConfig) {
+      const parsed = JSON.parse(savedConfig) as AiConfig
+      const savedKeyMode = parsed.keyMode === "env" || parsed.keyMode === "local"
+        ? parsed.keyMode
+        : defaultConfig.keyMode
+      return enforceLocalAiPolicy({
+        ...defaultConfig,
+        ...parsed,
+        enabled: defaultConfig.enabled || parsed.enabled,
+        onboarded: defaultConfig.onboarded || parsed.onboarded,
+        keyMode: savedKeyMode,
+      }, localAiEnabled)
+    }
+
+    const enabled = defaultConfig.enabled || localStorage.getItem("aiChatEnabled") === "true"
+    const onboarded = defaultConfig.onboarded || localStorage.getItem("aiChatOnboarded") === "true"
+    const keyMode = (localStorage.getItem("aiKeyMode") as KeyMode) || defaultConfig.keyMode
+    const chatMode = (localStorage.getItem("aiChatMode") as ChatMode) || defaultConfig.chatMode
+
+    const localKeys = keyMode === "local" ? {
+      provider: localStorage.getItem("aiProvider") || "openrouter",
+      apiKey: localStorage.getItem("openRouterApiKey") || "",
+      model: localStorage.getItem("openRouterModel") || "openai/gpt-4o-mini",
+      maxTokens: localStorage.getItem("openRouterMaxTokens") || "4000",
+      customEndpoint: localStorage.getItem("aiCustomEndpoint") || undefined,
+    } : undefined
+
+    const config: AiConfig = {
+      enabled,
+      onboarded,
+      keyMode,
+      chatMode,
+      localKeys,
+    }
+
+    saveToLS(storageKey, config)
+
+    return enforceLocalAiPolicy(config, localAiEnabled)
+  } catch {
+    return defaultConfig
+  }
+}
+
+const useAiConfig = () => {
+  const context = React.useContext(AiConfigContext)
+  if (context === undefined) {
+    throw new Error("useAiConfig must be used within an AiConfigProvider")
+  }
+  return context
+}
+
+const AiConfigRoot = ({
+  storageKey = "ai-config",
+  defaultConfig: providedDefaults,
+  children,
+  sharedKeys,
+  localAiEnabled = true,
+}: AiConfigProviderProps) => {
+  const defaultConfig = React.useMemo(() => enforceLocalAiPolicy({
+    ...defaultAiConfig,
+    ...providedDefaults,
+  }, localAiEnabled), [providedDefaults, localAiEnabled])
+
+  const [config, setConfigState] = React.useState<AiConfig>(() =>
+    loadFromLS(storageKey, defaultConfig, localAiEnabled)
+  )
+
+  const setConfig = React.useCallback(
+    (value: Partial<AiConfig> | ((prev: AiConfig) => Partial<AiConfig>)) => {
+      if (typeof value === "function") {
+        setConfigState((prevConfig) => {
+          const updates = value(prevConfig)
+          const newConfig = enforceLocalAiPolicy({ ...prevConfig, ...updates }, localAiEnabled)
+          saveToLS(storageKey, newConfig)
+          return newConfig
+        })
+      } else {
+        setConfigState((prevConfig) => {
+          const newConfig = enforceLocalAiPolicy({ ...prevConfig, ...value }, localAiEnabled)
+          saveToLS(storageKey, newConfig)
+          return newConfig
+        })
+      }
+    },
+    [storageKey, localAiEnabled]
+  )
+
+  React.useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key !== storageKey && !e.key?.startsWith("ai") && !e.key?.startsWith("openRouter")) {
+        return
+      }
+      const newConfig = loadFromLS(storageKey, defaultConfig, localAiEnabled)
+      setConfigState(newConfig)
+    }
+
+    window.addEventListener("storage", handleStorage)
+    return () => window.removeEventListener("storage", handleStorage)
+  }, [storageKey, defaultConfig, localAiEnabled])
+
+  const [isHydrated, setIsHydrated] = React.useState(false)
+  React.useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  React.useEffect(() => {
+    if (localAiEnabled) return
+    setConfigState((currentConfig) => {
+      const enforcedConfig = enforceLocalAiPolicy(currentConfig, false)
+      saveToLS(storageKey, enforcedConfig)
+      return enforcedConfig
+    })
+  }, [localAiEnabled, storageKey])
+
+  const providerValue = React.useMemo(
+    () => ({
+      config: isHydrated ? config : defaultConfig,
+      setConfig,
+      isHydrated,
+      sharedKeys,
+      localAiEnabled,
+    }),
+    [config, setConfig, isHydrated, defaultConfig, sharedKeys, localAiEnabled]
+  )
+
+  return (
+    <AiConfigContext.Provider value={providerValue}>
+      {children}
+    </AiConfigContext.Provider>
+  )
+}
+
+const AiConfigProvider = (props: AiConfigProviderProps) => {
+  const context = React.useContext(AiConfigContext)
+  if (context) return <>{props.children}</>
+  return <AiConfigRoot {...props} />
+}
+
+const useAiEnabled = () => {
+  const { config } = useAiConfig()
+  return config.enabled && config.onboarded
+}
+
+const useAiKeyMode = () => {
+  const { config, setConfig } = useAiConfig()
+  return {
+    keyMode: config.keyMode,
+    setKeyMode: (keyMode: KeyMode) => setConfig({ keyMode }),
+  }
+}
+
+const useChatMode = () => {
+  const { config, setConfig } = useAiConfig()
+  return {
+    chatMode: config.chatMode,
+    setChatMode: (chatMode: ChatMode) => setConfig({ chatMode }),
+  }
+}
+
+const useLocalKeys = () => {
+  const { config, setConfig } = useAiConfig()
+  return {
+    localKeys: config.localKeys,
+    setLocalKeys: (localKeys: LocalKeys) => setConfig({ localKeys }),
+  }
+}
+
+const AiChatStorageCompat = {
+  getConfig: (): AiConfig => {
+    return loadFromLS("ai-config", defaultAiConfig)
+  },
+  
+  saveConfig: (updates: Partial<AiConfig>) => {
+    const currentConfig = loadFromLS("ai-config", defaultAiConfig)
+    const newConfig = { ...currentConfig, ...updates }
+    saveToLS("ai-config", newConfig)
+  }
+}
+
+export {
+  useAiConfig,
+  AiConfigProvider,
+  useAiEnabled,
+  useAiKeyMode,
+  useChatMode,
+  useLocalKeys,
+  AiChatStorageCompat as AiChatStorage,
+  type AiConfig,
+  type KeyMode,
+  type ChatMode,
+  type LocalKeys,
+}

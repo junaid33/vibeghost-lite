@@ -1,0 +1,6 @@
+.avatar { position:relative; display:block; width:18px; height:18px; flex:none; overflow:visible; }
+.mark { position:absolute; display:block; width:68%; height:68%; border:1.5px solid var(--oathkeeper-sidebar); border-radius:999px; background:var(--oathkeeper-sidebar); box-shadow:0 0 0 .5px rgb(255 255 255 / .08); }
+.avatar .artwork { display:block; width:100%; height:100%; border-radius:999px; }
+.mark:nth-child(1) { top:0; left:0; }
+.mark:nth-child(2) { top:0; right:0; }
+.mark:nth-child(3) { bottom:0; left:50%; transform:translateX(-50%); }

@@ -1,0 +1,111 @@
+.timeline {
+  flex: 1;
+  min-width: 0;
+  padding: 20px 12px;
+}
+
+@media (min-width: 640px) {
+  .timeline { padding: 28px 20px; }
+}
+
+/* Agent Lanes asks for "Inter"; Oathkeeper serves Inter through next/font under its own name. */
+.lanes :global(.ui-al) {
+  font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Exactly as on affectUI's page (archive screenshots/reference-dark.json): undo what Oathkeeper's
+   body and Tailwind's preflight add around the component. The inherited ones sit on the wrapper;
+   the rest are :where() (no specificity), so every rule of the component's own still wins. */
+.lanes {
+  tab-size: 8;
+  text-rendering: auto;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, .18);
+}
+.lanes :global(:where(.ui-al, .ui-al *, .ui-al *::before, .ui-al *::after)) { border-style: none; }
+.lanes :global(:where(.ui-al button)) { letter-spacing: normal; appearance: auto; }
+.lanes :global(:where(.ui-al svg)) { vertical-align: baseline; }
+
+/* Phones: the board keeps its full layout and scrolls sideways with momentum; the time axis is
+   inside it, so it moves with the lanes. Vertical swipes still scroll the page. */
+.scroller {
+  min-width: 0;
+}
+@media (max-width: 779px) {
+  .scroller {
+    margin: 0 -12px;
+    padding: 0 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    scrollbar-width: none;
+  }
+  .scroller::-webkit-scrollbar { display: none; }
+  .lanes { width: 760px; }
+}
+
+/* The opened session's mini terminal: a side panel on desktop, a bottom sheet on phones
+   (the Kanban card sidebar's panel, kanban-card-sidebar.module.css). */
+.panel { composes: card from "./workspace-card.module.css"; }
+.panel.panel {
+  position: fixed;
+  z-index: var(--z-modal, 400);
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  width: min(460px, calc(100vw - 16px));
+  min-height: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  color: #d7dbd8;
+  font-size: 13px;
+  outline: none;
+  animation: panel-in 200ms cubic-bezier(.2, .8, .2, 1) both;
+}
+@keyframes panel-in { from { opacity: 0; transform: translateX(16px); } }
+/* It ends 8px above the dock at every width, so the dock stays usable while it is open. */
+.panel.panel { bottom: calc(var(--oathkeeper-viewport-bottom, 0px) + var(--oathkeeper-bottom-dock-clearance, 56px) + 8px); }
+@media (max-width: 640px) {
+  .panel.panel {
+    top: auto;
+    right: 6px;
+    left: 6px;
+    bottom: calc(var(--oathkeeper-viewport-bottom, 0px) + var(--oathkeeper-bottom-dock-clearance, 56px) + 6px);
+    width: auto;
+    height: min(74dvh, 640px);
+    animation-name: sheet-in;
+  }
+  @keyframes sheet-in { from { opacity: 0; transform: translateY(24px); } }
+}
+.head { position: relative; display: flex; flex: none; align-items: center; gap: 6px; min-width: 0; height: 36px; padding-left: 8px; }
+.headTitle { min-width: 0; flex: 1; margin: 0; overflow: hidden; color: #f4f7f5; font-size: 13px; font-weight: 500; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.grabber { display: none; }
+@media (max-width: 640px) {
+  .head { padding-top: 6px; }
+  .grabber { position: absolute; top: 0; left: 50%; display: block; width: 36px; height: 4px; border-radius: 2px; background: rgb(255 255 255 / .16); transform: translateX(-50%); }
+}
+.icon { display: grid; width: 32px; height: 32px; flex: none; place-items: center; padding: 0; border: 0; border-radius: 9px; background: transparent; color: #919793; cursor: pointer; }
+.icon:hover { background: rgb(255 255 255 / .06); color: #f4f7f5; }
+.icon:focus-visible { outline: 2px solid #8bb8ff; outline-offset: -2px; }
+.icon svg { width: 14px; height: 14px; }
+@media (pointer: coarse) { .icon { width: 44px; height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .panel.panel { animation: none; } }
+
+.more {
+  height: 1px;
+}
+
+.state {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 40dvh;
+  padding: 24px 12px;
+  font-size: 12px;
+  color: #919793;
+  text-align: center;
+}
